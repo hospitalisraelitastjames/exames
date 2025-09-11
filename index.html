@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Entrevista Colonoscopia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f8fc;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: #ffffff;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 15px;
+      max-width: 800px;
+      width: 100%;
+      box-shadow: 0px 6px 18px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.2em;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    h2 {
+      text-align: center;
+      color: #2a6db0;
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+    fieldset {
+      border: none;
+      margin-bottom: 25px;
+      padding: 0;
+    }
+    legend {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+      font-size: 1.05em;
+      color: #333;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      font-size: 1em;
+      box-sizing: border-box;
+      background: #fafafa;
+    }
+    .yes-no {
+      margin-top: 6px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .yes-no label {
+      font-weight: normal;
+      background: #f0f4f7;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .checkbox label {
+      font-weight: normal;
+      display: block;
+      margin: 4px 0;
+    }
+    .alerta {
+      background: #fff4e6;
+      border: 1px solid #f5c190;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 0.95em;
+      color: #333;
+      margin-top: 15px;
+    }
+    .responsabilidade {
+      font-size: 0.9em;
+      color: #444;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    button {
+      margin-top: 25px;
+      padding: 15px;
+      background: #2a6db0;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1.2em;
+      width: 100%;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #1a4e80;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hospital Israelita St. James Jarinu</h1>
+    <h2>Entrevista para Elegibilidade<br> Exame de Colonoscopia</h2>
+
+    <form action="https://formsubmit.co/tomcastro@hospitalstjames.com.br" method="POST">
+      
+      <!-- DADOS PESSOAIS -->
+      <fieldset>
+        <legend>Dados Pessoais</legend>
+        <label>Data da Entrevista:</label>
+        <input type="date" name="data_entrevista" required>
+
+        <label>Nome completo:</label>
+        <input type="text" name="nome" required>
+
+        <label>Contato:</label>
+        <input type="tel" name="contato" placeholder="(xx) xxxxx-xxxx" required>
+
+        <label>Convênio:</label>
+        <input type="text" name="convenio">
+
+        <label>Data de nascimento:</label>
+        <input type="date" name="nascimento">
+      </fieldset>
+
+      <!-- HISTÓRICO -->
+      <fieldset>
+        <legend>Histórico do Exame</legend>
+        <label>Já realizou esse exame?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="ja_realizou" value="sim"> Sim</label>
+          <label><input type="radio" name="ja_realizou" value="nao"> Não</label>
+        </div>
+
+        <label>Quanto tempo faz?</label>
+        <input type="text" name="tempo_desde">
+
+        <label>Idade:</label>
+        <input type="number" name="idade">
+
+        <label>Peso (kg):</label>
+        <input type="number" step="0.1" id="peso" name="peso" oninput="calcularIMC()">
+
+        <label>Altura (m):</label>
+        <input type="number" step="0.01" id="altura" name="altura" oninput="calcularIMC()">
+
+        <label>IMC (automático):</label>
+        <input type="text" id="imc" name="imc" readonly>
+      </fieldset>
+
+      <!-- CONDIÇÕES DE SAÚDE -->
+      <fieldset>
+        <legend>Histórico de Saúde</legend>
+        <label>Deficiência neurológica?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="deficiencia_neuro" value="sim"> Sim</label>
+          <label><input type="radio" name="deficiencia_neuro" value="nao"> Não</label>
+        </div>
+
+        <label>Problema cardíaco (pressão alta/baixa, marca-passo, angioplastia)?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="problema_cardiaco" value="sim"> Sim</label>
+          <label><input type="radio" name="problema_cardiaco" value="nao"> Não</label>
+        </div>
+        <label>Qual?</label>
+        <input type="text" name="tipo_cardiaco">
+
+        <label>Problema respiratório?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="problema_respiratorio" value="sim"> Sim</label>
+          <label><input type="radio" name="problema_respiratorio" value="nao"> Não</label>
+        </div>
+        <label>Qual?</label>
+        <input type="text" name="tipo_respiratorio">
+
+        <label>Alergia a medicamento?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="alergia" value="sim"> Sim</label>
+          <label><input type="radio" name="alergia" value="nao"> Não</label>
+        </div>
+        <label>Qual?</label>
+        <input type="text" name="medicamento_alergia">
+
+        <label>Uso de anticoagulantes (Clop., AAS, Pradaxa, Xarelto ou outros)?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="anticoagulante" value="sim"> Sim</label>
+          <label><input type="radio" name="anticoagulante" value="nao"> Não</label>
+        </div>
+        <label>Qual?</label>
+        <input type="text" name="qual_anticoagulante">
+
+        <label>Uso de outros medicamentos?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="medicamentos" value="sim"> Sim</label>
+          <label><input type="radio" name="medicamentos" value="nao"> Não</label>
+        </div>
+        <label>Quais?</label>
+        <textarea name="quais_medicamentos"></textarea>
+
+        <label>Uso de insulina ou medicação p/ diabetes hoje?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="insulina_diabetes" value="sim"> Sim</label>
+          <label><input type="radio" name="insulina_diabetes" value="nao"> Não</label>
+        </div>
+
+        <label>Já teve hepatite B ou C?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="hepatite" value="sim"> Sim</label>
+          <label><input type="radio" name="hepatite" value="nao"> Não</label>
+        </div>
+
+        <label>Já foi sedado?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="sedacao" value="sim"> Sim</label>
+          <label><input type="radio" name="sedacao" value="nao"> Não</label>
+        </div>
+        <label>Teve algum problema?</label>
+        <input type="text" name="problema_sedacao">
+
+        <label>Já realizou cirurgia?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="cirurgia" value="sim"> Sim</label>
+          <label><input type="radio" name="cirurgia" value="nao"> Não</label>
+        </div>
+
+        <label>Tabagista (fumante)?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="tabagista" value="sim"> Sim</label>
+          <label><input type="radio" name="tabagista" value="nao"> Não</label>
+        </div>
+
+        <label>Etilista (alcoolismo)?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="alcool" value="sim"> Sim</label>
+          <label><input type="radio" name="alcool" value="nao"> Não</label>
+        </div>
+      </fieldset>
+
+      <!-- HOSPITAL -->
+      <fieldset>
+        <legend>Para uso do hospital</legend>
+        <label>Paciente necessita de atestado médico?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="atestado_medico" value="sim"> Sim</label>
+          <label><input type="radio" name="atestado_medico" value="nao"> Não</label>
+        </div>
+
+        <label>Acompanhante necessita de declaração?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="declaracao_acompanhante" value="sim"> Sim</label>
+          <label><input type="radio" name="declaracao_acompanhante" value="nao"> Não</label>
+        </div>
+
+        <label>Paciente recebeu preparo para exame?</label>
+        <div class="yes-no">
+          <label><input type="radio" name="preparo_recebido" value="sim"> Sim</label>
+          <label><input type="radio" name="preparo_recebido" value="nao"> Não</label>
+        </div>
+      </fieldset>
+
+      <!-- SINTOMAS -->
+      <fieldset>
+        <legend>Sintomas</legend>
+        <div class="checkbox">
+          <label><input type="checkbox" name="sintomas[]" value="alteracao_habito"> Alteração de hábito intestinal</label>
+          <label><input type="checkbox" name="sintomas[]" value="sangramento"> Sangramento nas fezes</label>
+          <label><input type="checkbox" name="sintomas[]" value="constipacao"> Constipação intestinal</label>
+          <label><input type="checkbox" name="sintomas[]" value="diarreia"> Diarreia</label>
+          <label><input type="checkbox" name="sintomas[]" value="dor_abdominal"> Dor abdominal</label>
+          <label><input type="checkbox" name="sintomas[]" value="outros"> Outros</label>
+        </div>
+      </fieldset>
+
+      <!-- PARTICULARES -->
+      <fieldset>
+        <legend>Pacientes Particulares</legend>
+
+        <div class="alerta">
+          <p><strong>Atenção:</strong></p>
+          <p>Se for necessário realizar coleta para biópsia, será cobrado o valor de <strong>R$ 216,00</strong>.</p>
+          <p>Caso a análise seja feita no laboratório do Hospital Israelita St. James Jarinu, haverá cobrança adicional de <strong>R$ 118,00 por cada peça coletada</strong>.</p>
+        </div>
+
+        <p>Foram claras as informações passadas?</p>
+        <div class="yes-no">
+          <label><input type="radio" name="informacoes_claras" value="sim" required> Sim</label>
+          <label><input type="radio" name="informacoes_claras" value="nao"> Não</label>
+        </div>
+
+        <p>Está ciente e de acordo com as condições acima?</p>
+        <div class="yes-no">
+          <label><input type="radio" name="ciente_valores" value="sim" required> Sim</label>
+          <label><input type="radio" name="ciente_valores" value="nao"> Não</label>
+        </div>
+      </fieldset>
+
+      <!-- RESPONSABILIDADE -->
+      <fieldset>
+        <legend>Declaração de Responsabilidade</legend>
+        <div class="responsabilidade">
+          <p>Declaro que todas as informações prestadas neste formulário são verdadeiras e de minha inteira responsabilidade. Estou ciente de que informações incorretas podem impactar na segurança e no resultado do exame.</p>
+        </div>
+        <div class="yes-no">
+          <label><input type="radio" name="responsabilidade" value="declaro" required> Declaro que as informações são verdadeiras</label>
+        </div>
+      </fieldset>
+
+      <button type="submit">📨 Enviar Formulário</button>
+    </form>
+  </div>
+
+  <!-- Script para calcular IMC -->
+  <script>
+    function calcularIMC() {
+      const peso = parseFloat(document.getElementById("peso").value);
+      const altura = parseFloat(document.getElementById("altura").value);
+      if (peso > 0 && altura > 0) {
+        const imc = (peso / (altura * altura)).toFixed(2);
+        document.getElementById("imc").value = imc;
+      } else {
+        document.getElementById("imc").value = "";
+      }
+    }
+  </script>
+</body>
+</html>
