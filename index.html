@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Entrevista Colonoscopia</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Bibliotecas para gerar PDF (sem html2canvas) -->
+  <!-- Bibliotecas para gerar PDF -->
   <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
   <script src="https://unpkg.com/jspdf-autotable@latest/dist/jspdf.plugin.autotable.js"></script>
   <style>
@@ -19,6 +19,8 @@
     input, textarea { width: 100%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #bbb; font-size: 1em; box-sizing: border-box; background: #fafafa; }
     .yes-no { margin-top: 6px; display: flex; gap: 20px; flex-wrap: wrap; }
     .yes-no label { font-weight: normal; background: #f0f4f7; padding: 6px 12px; border-radius: 20px; cursor: pointer; }
+    .checkbox label { display: flex; align-items: center; margin: 6px 0; font-weight: normal; }
+    .checkbox input[type="checkbox"] { margin-right: 8px; width: auto; }
     .alerta { background: #fff4e6; border: 1px solid #f5c190; padding: 15px; border-radius: 10px; font-size: 0.95em; color: #333; margin-top: 15px; }
     .responsabilidade { font-size: 0.9em; color: #444; background: #f9f9f9; border: 1px solid #ddd; padding: 12px; border-radius: 8px; margin-top: 20px; }
     .botoes-acao { display: flex; flex-direction: column; gap: 10px; margin-top: 25px; }
@@ -39,11 +41,80 @@
   <div class="container">
     <h1>Hospital Israelita St. James Jarinu</h1>
     <h2>Entrevista para Elegibilidade<br> Exame de Colonoscopia</h2>
+
     <form action="https://formsubmit.co/gestaopa@hospitalstjames.com.br" method="POST">
-      <!-- ... (demais campos do formulário) ... -->
-      <fieldset> <legend>Dados Pessoais</legend> <label>Data da Entrevista:</label> <input type="text" id="dataEntrevista" name="Data da entrevista" readonly> <label>Nome completo:</label><input type="text" name="Nome do paciente" required> <label>Contato:</label><input type="tel" name="Telefone de contato" placeholder="(xx) xxxxx-xxxx" required> <label>Convênio:</label><input type="text" name="Convênio"> <label>Data de nascimento:</label><input type="date" name="Data de nascimento"> </fieldset>
-      <fieldset> <legend>Histórico do Exame</legend> <label>Já realizou esse exame?</label> <div class="yes-no"><label><input type="radio" name="Já realizou colonoscopia" value="sim"> Sim</label><label><input type="radio" name="Já realizou colonoscopia" value="nao"> Não</label></div> <label>Quanto tempo faz?</label><input type="text" name="Tempo desde último exame"> <label>Idade:</label><input type="number" name="Idade"> <label>Peso (kg):</label><input type="number" step="0.1" id="peso" name="Peso (kg)" oninput="calcularIMC()"> <label>Altura (m):</label><input type="number" step="0.01" id="altura" name="Altura (m)" oninput="calcularIMC()"> <label>IMC (automático):</label><input type="text" id="imc" name="IMC" readonly> </fieldset>
-      <fieldset> <legend>Histórico de Saúde</legend> <label>Deficiência neurológica?</label><div class="yes-no"><label><input type="radio" name="Deficiência neurológica" value="sim"> Sim</label><label><input type="radio" name="Deficiência neurológica" value="nao"> Não</label></div> <label>Problema cardíaco (pressão alta/baixa, marca-passo, angioplastia)?</label><div class="yes-no"><label><input type="radio" name="Problema cardíaco" value="sim"> Sim</label><label><input type="radio" name="Problema cardíaco" value="nao"> Não</label></div> <label>Qual?</label><input type="text" name="Tipo de problema cardíaco"> <label>Problema respiratório?</label><div class="yes-no"><label><input type="radio" name="Problema respiratório" value="sim"> Sim</label><label><input type="radio" name="Problema respiratório" value="nao"> Não</label></div> <label>Qual?</label><input type="text" name="Tipo de problema respiratório"> <label>Alergia a medicamento?</label><div class="yes-no"><label><input type="radio" name="Alergia a medicamento" value="sim"> Sim</label><label><input type="radio" name="Alergia a medicamento" value="nao"> Não</label></div> <label>Qual?</label><input type="text" name="Medicamento - alergia"> <label>Uso de anticoagulantes (Clop., AAS, Pradaxa, Xarelto ou outros)?</label><div class="yes-no"><label><input type="radio" name="Uso de anticoagulantes" value="sim"> Sim</label><label><input type="radio" name="Uso de anticoagulantes" value="nao"> Não</label></div> <label>Qual?</label><input type="text" name="Qual anticoagulante"> <label>Uso de outros medicamentos?</label><div class="yes-no"><label><input type="radio" name="Uso de outros medicamentos" value="sim"> Sim</label><label><input type="radio" name="Uso de outros medicamentos" value="nao"> Não</label></div> <label>Quais?</label><textarea name="Quais medicamentos"></textarea> <label>Uso de insulina ou medicação p/ diabetes hoje?</label><div class="yes-no"><label><input type="radio" name="Uso de insulina/medicação diabetes" value="sim"> Sim</label><label><input type="radio" name="Uso de insulina/medicação diabetes" value="nao"> Não</label></div> <label>Já teve hepatite B ou C?</label><div class="yes-no"><label><input type="radio" name="Hepatite B ou C" value="sim"> Sim</label><label><input type="radio" name="Hepatite B ou C" value="nao"> Não</label></div> <label>Já foi sedado?</label><div class="yes-no"><label><input type="radio" name="Já foi sedado" value="sim"> Sim</label><label><input type="radio" name="Já foi sedado" value="nao"> Não</label></div> <label>Teve algum problema?</label><input type="text" name="Problema na sedação"> <label>Já realizou cirurgia?</label><div class="yes-no"><label><input type="radio" name="Já realizou cirurgia" value="sim"> Sim</label><label><input type="radio" name="Já realizou cirurgia" value="nao"> Não</label></div> <label>Qual cirurgia?</label><input type="text" name="Qual cirurgia realizada"> <label>Tabagista (fumante)?</label><div class="yes-no"><label><input type="radio" name="Tabagista (fumante)" value="sim"> Sim</label><label><input type="radio" name="Tabagista (fumante)" value="nao"> Não</label></div> <label>Consome bebida alcoólica (etilista)?</label><div class="yes-no"><label><input type="radio" name="Consome bebida alcoólica (etilista)" value="sim"> Sim</label><label><input type="radio" name="Consome bebida alcoólica (etilista)" value="nao"> Não</label></div> </fieldset>
+      <input type="hidden" name="_subject" value="📋 Nova Entrevista - Colonoscopia">
+      <input type="hidden" name="_next" value="https://hospitalisraelitastjames.github.io/exames/obrigado.html">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="text" name="_honey" style="display:none">
+
+      <fieldset>
+        <legend>Dados Pessoais</legend>
+        <label>Data da Entrevista:</label>
+        <input type="text" id="dataEntrevista" name="Data da entrevista" readonly>
+        <label>Nome completo:</label><input type="text" name="Nome do paciente" required>
+        <label>Contato:</label><input type="tel" name="Telefone de contato" placeholder="(xx) xxxxx-xxxx" required>
+        <label>Convênio:</label><input type="text" name="Convênio">
+        <label>Data de nascimento:</label><input type="date" name="Data de nascimento">
+      </fieldset>
+
+      <fieldset>
+        <legend>Histórico do Exame</legend>
+        <label>Já realizou esse exame?</label>
+        <div class="yes-no"><label><input type="radio" name="Já realizou colonoscopia" value="sim"> Sim</label><label><input type="radio" name="Já realizou colonoscopia" value="nao"> Não</label></div>
+        <label>Quanto tempo faz?</label><input type="text" name="Tempo desde último exame">
+        <label>Idade:</label><input type="number" name="Idade">
+        <label>Peso (kg):</label><input type="number" step="0.1" id="peso" name="Peso (kg)" oninput="calcularIMC()">
+        <label>Altura (m):</label><input type="number" step="0.01" id="altura" name="Altura (m)" oninput="calcularIMC()">
+        <label>IMC (automático):</label><input type="text" id="imc" name="IMC" readonly>
+      </fieldset>
+
+      <fieldset>
+        <legend>Histórico de Saúde</legend>
+        <label>Deficiência neurológica?</label><div class="yes-no"><label><input type="radio" name="Deficiência neurológica" value="sim"> Sim</label><label><input type="radio" name="Deficiência neurológica" value="nao"> Não</label></div>
+        <label>Problema cardíaco (pressão alta/baixa, marca-passo, angioplastia)?</label><div class="yes-no"><label><input type="radio" name="Problema cardíaco" value="sim"> Sim</label><label><input type="radio" name="Problema cardíaco" value="nao"> Não</label></div>
+        <label>Qual?</label><input type="text" name="Tipo de problema cardíaco">
+        <label>Problema respiratório?</label><div class="yes-no"><label><input type="radio" name="Problema respiratório" value="sim"> Sim</label><label><input type="radio" name="Problema respiratório" value="nao"> Não</label></div>
+        <label>Qual?</label><input type="text" name="Tipo de problema respiratório">
+        <label>Alergia a medicamento?</label><div class="yes-no"><label><input type="radio" name="Alergia a medicamento" value="sim"> Sim</label><label><input type="radio" name="Alergia a medicamento" value="nao"> Não</label></div>
+        <label>Qual?</label><input type="text" name="Medicamento - alergia">
+        <label>Uso de anticoagulantes (Clop., AAS, Pradaxa, Xarelto ou outros)?</label><div class="yes-no"><label><input type="radio" name="Uso de anticoagulantes" value="sim"> Sim</label><label><input type="radio" name="Uso de anticoagulantes" value="nao"> Não</label></div>
+        <label>Qual?</label><input type="text" name="Qual anticoagulante">
+        <label>Uso de outros medicamentos?</label><div class="yes-no"><label><input type="radio" name="Uso de outros medicamentos" value="sim"> Sim</label><label><input type="radio" name="Uso de outros medicamentos" value="nao"> Não</label></div>
+        <label>Quais?</label><textarea name="Quais medicamentos"></textarea>
+        <label>Uso de insulina ou medicação p/ diabetes hoje?</label><div class="yes-no"><label><input type="radio" name="Uso de insulina/medicação diabetes" value="sim"> Sim</label><label><input type="radio" name="Uso de insulina/medicação diabetes" value="nao"> Não</label></div>
+        <label>Já teve hepatite B ou C?</label><div class="yes-no"><label><input type="radio" name="Hepatite B ou C" value="sim"> Sim</label><label><input type="radio" name="Hepatite B ou C" value="nao"> Não</label></div>
+        <label>Já foi sedado?</label><div class="yes-no"><label><input type="radio" name="Já foi sedado" value="sim"> Sim</label><label><input type="radio" name="Já foi sedado" value="nao"> Não</label></div>
+        <label>Teve algum problema?</label><input type="text" name="Problema na sedação">
+        <label>Já realizou cirurgia?</label><div class="yes-no"><label><input type="radio" name="Já realizou cirurgia" value="sim"> Sim</label><label><input type="radio" name="Já realizou cirurgia" value="nao"> Não</label></div>
+        <label>Qual cirurgia?</label><input type="text" name="Qual cirurgia realizada">
+        <label>Tabagista (fumante)?</label><div class="yes-no"><label><input type="radio" name="Tabagista (fumante)" value="sim"> Sim</label><label><input type="radio" name="Tabagista (fumante)" value="nao"> Não</label></div>
+        <label>Consome bebida alcoólica (etilista)?</label><div class="yes-no"><label><input type="radio" name="Consome bebida alcoólica (etilista)" value="sim"> Sim</label><label><input type="radio" name="Consome bebida alcoólica (etilista)" value="nao"> Não</label></div>
+      </fieldset>
+      
+      <fieldset>
+        <legend>Para uso do hospital</legend>
+        <label>Paciente necessita atestado médico?</label><div class="yes-no"><label><input type="radio" name="Necessita atestado médico" value="sim"> Sim</label><label><input type="radio" name="Necessita atestado médico" value="nao"> Não</label></div>
+        <label>Acompanhante necessita declaração?</label><div class="yes-no"><label><input type="radio" name="Acompanhante necessita declaração" value="sim"> Sim</label><label><input type="radio" name="Acompanhante necessita declaração" value="nao"> Não</label></div>
+        <label>Paciente recebeu preparo?</label><div class="yes-no"><label><input type="radio" name="Preparo recebido" value="sim"> Sim</label><label><input type="radio" name="Preparo recebido" value="nao"> Não</label></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Sintomas</legend>
+        <div class="checkbox">
+          <label><input type="checkbox" name="Sintomas[]" value="Alteração hábito intestinal"> Alteração de hábito intestinal</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Sangramento nas fezes"> Sangramento nas fezes</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Constipação intestinal"> Constipação intestinal</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Diarreia"> Diarreia</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Dor abdominal"> Dor abdominal</label>
+          <label><input type="checkbox" id="outrosSintomasCheck" name="Sintomas[]" value="Outros"> Outros</label>
+        </div>
+        <div id="campoOutrosSintomas" style="display:none; margin-top:10px;">
+          <label>Descreva os outros sintomas:</label>
+          <textarea name="Outros sintomas"></textarea>
+        </div>
+      </fieldset>
+
       <fieldset>
         <legend>Custos Adicionais e Pagamento</legend>
         <div class="alerta info-pagamento">
@@ -59,9 +130,11 @@
         <p>Está ciente e de acordo com as condições acima?</p>
         <div class="yes-no"><label><input type="radio" name="Acordo com custos" value="sim" required> Sim</label><label><input type="radio" name="Acordo com custos" value="nao"> Não</label></div>
       </fieldset>
+
       <fieldset> <div class="alerta"> <p><strong>Importante:</strong></p> <p>O atestado médico é exclusivamente para o <strong>dia do exame</strong> e não abrange os dias de preparo.</p> </div> </fieldset>
-      <fieldset> <legend>Declaração de Responsabilidade</legend> <div class="responsabilidade"> <p>Declaro que todas as informações prestadas neste formulário são verdadeiras e de minha inteira responsabilidade. Estou ciente de que informações incorretas podem impactar na segurança e no resultado do exame.</p> </div> <div class="yes-no"><label><input type="radio" name="Declaração de responsabilidade" value="declaro" required> Declaro que as informações são verdadeiras</label></div> </fieldset>
       
+      <fieldset> <legend>Declaração de Responsabilidade</legend> <div class="responsabilidade"> <p>Declaro que todas as informações prestadas neste formulário são verdadeiras e de minha inteira responsabilidade. Estou ciente de que informações incorretas podem impactar na segurança e no resultado do exame.</p> </div> <div class="yes-no"><label><input type="radio" name="Declaração de responsabilidade" value="declaro" required> Declaro que as informações são verdadeiras</label></div> </fieldset>
+
       <div class="botoes-acao">
         <button type="button" class="btn-pdf" id="btn-pdf-colono" onclick="gerarPDF()">📄 Baixar Preparo em PDF</button>
         <button type="submit">📨 Enviar Formulário</button>
@@ -70,171 +143,201 @@
   </div>
   
   <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const hoje = new Date();
+      const dd = String(hoje.getDate()).padStart(2,'0');
+      const mm = String(hoje.getMonth()+1).padStart(2,'0');
+      const yyyy = hoje.getFullYear();
+      document.getElementById("dataEntrevista").value = `${dd}/${mm}/${yyyy}`;
+
+      document.getElementById("outrosSintomasCheck").addEventListener("change", function() {
+        document.getElementById("campoOutrosSintomas").style.display = this.checked ? "block" : "none";
+      });
+    });
+
+    function calcularIMC() {
+      const peso = parseFloat(document.getElementById("peso")?.value);
+      const altura = parseFloat(document.getElementById("altura")?.value);
+      if (peso > 0 && altura > 0) {
+        const imc = (peso / (altura * altura)).toFixed(2);
+        document.getElementById("imc").value = imc;
+      } else {
+        document.getElementById("imc").value = "";
+      }
+    }
+
     function gerarPDF() {
       const btn = document.getElementById('btn-pdf-colono');
       btn.disabled = true;
       btn.innerText = 'Gerando PDF...';
 
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      
       let y = 15;
-      const pageHeight = doc.internal.pageSize.height;
       const margin = 15;
       const maxWidth = doc.internal.pageSize.width - margin * 2;
 
-      function checkPageBreak(currentY) {
-        if (currentY > pageHeight - margin) {
+      // --- Funções Auxiliares ---
+      function checkPageBreak(currentY, neededHeight = 20) {
+        if (currentY + neededHeight > doc.internal.pageSize.height - margin) {
           doc.addPage();
+          y = margin;
           return margin;
         }
         return currentY;
       }
+
+      function addHeader() {
+        doc.setFontSize(18);
+        doc.setTextColor(42, 109, 176); // #2a6db0
+        doc.text("Preparo e Custos - Colonoscopia", doc.internal.pageSize.width / 2, y, { align: 'center' });
+        y += 10;
+        doc.setDrawColor(200);
+        doc.line(margin, y, doc.internal.pageSize.width - margin, y);
+        y += 15;
+      }
       
-      // Título Principal
-      doc.setFontSize(18);
-      doc.setTextColor(42, 109, 176); // #2a6db0
-      doc.text("Preparo e Custos - Colonoscopia", doc.internal.pageSize.width / 2, y, { align: 'center' });
-      y += 10;
+      function addTitle(title, size = 14) {
+        y = checkPageBreak(y);
+        doc.setFontSize(size);
+        doc.setTextColor(42, 109, 176);
+        doc.text(title, margin, y);
+        y += (size / 2);
+      }
+
+      function addSubTitle(title) {
+        y = checkPageBreak(y);
+        doc.setFontSize(11);
+        doc.setTextColor(51, 51, 51);
+        doc.setFont('helvetica', 'bold');
+        doc.text(title, margin, y);
+        y += 6;
+      }
+
+      function addText(text) {
+        y = checkPageBreak(y);
+        doc.setFontSize(10);
+        doc.setTextColor(51, 51, 51);
+        doc.setFont('helvetica', 'normal');
+        const lines = doc.splitTextToSize(text, maxWidth);
+         if (y + (lines.length * 5) > doc.internal.pageSize.height - margin) {
+            doc.addPage();
+            y = margin;
+        }
+        doc.text(lines, margin, y);
+        y += lines.length * 5 + 4;
+      }
+      
+      function addListItem(text) {
+        y = checkPageBreak(y, 10);
+        doc.setFontSize(10);
+        doc.setTextColor(51, 51, 51);
+        doc.setFont('helvetica', 'normal');
+        const lines = doc.splitTextToSize(text, maxWidth - 5);
+        doc.text("-", margin, y);
+        doc.text(lines, margin + 5, y);
+        y += lines.length * 5 + 2;
+      }
+
+      // --- Construção do PDF ---
+      addHeader();
+
+      // PAGE 1: INFORMATIVO
+      addTitle("Informativo do Procedimento de Colonoscopia");
+      addSubTitle("O que é Colonoscopia?");
+      addText("Colonoscopia é um exame realizado por médicos especialistas, para diagnosticar e tratar doenças do cólon (intestino grosso). Dura cerca de 30 minutos, sendo realizado sob sedação. O exame é rápido, tranquilo e indolor. É um exame extremamente preciso e muito importante para diversos diagnósticos e também para rastreio de câncer de intestino.");
+      
+      addSubTitle("Como é feito o exame de Colonoscopia?");
+      addText("Para permitir a visualização do intestino é necessário remover completamente as fezes por meio do preparo intestinal, que tem início nos dias que antecedem o exame. O Sr.(a) será encaminhado para sala de exames por um profissional da equipe de enfermagem e será submetido a uma rápida entrevista que permite conhecer melhor sua condição de saúde e planejar o procedimento de sedação a ser utilizado. Após a administração da sedação, o médico endoscopista introduz o endoscópio através do canal anal e o conduz suavemente através do intestino grosso, realizando um exame cuidadoso sem que o paciente sinta desconforto ou dor. A duração aproximada do procedimento é de 30 minutos. O tempo de permanência no setor é de aproximadamente 1 hora.");
+      
+      addSubTitle("O que acontece após a Colonoscopia?");
+      addText("Terminado o exame, o paciente é encaminhado para a sala de recuperação pós-anestésica onde é monitorado até que esteja bem acordado e tenha condições de alta. Após o exame normalmente o paciente não apresenta sintomas, sendo raras as manifestações de náuseas, desconforto abdominal e cólica, sintomas que normalmente melhoram após a eliminação do ar insuflado no intestino durante o exame. A equipe da endoscopia irá informá-lo(la) caso exista algum cuidado especial não previsto antes do exame.");
+
+      addSubTitle("Quais as possíveis complicações com a realização da Colonoscopia?");
+      addText("Apesar de todos os cuidados tomados, algumas complicações leves podem ocorrer. A incidência geral de complicações em Colonoscopia é rara, em torno de 1:1000 exames. Complicações maiores são extremamente raras e incluem reações medicamentosas, complicações cardíacas e pulmonares. A perfuração intestinal pode ocorrer em 0,1% das Colonoscopias diagnósticas e 0,3% das Colonoscopias com procedimentos terapêuticos. Sangramentos em pequena quantidade podem ocorrer (0,06%) e são controlados durante a Colonoscopia.");
+
+      addSubTitle("O que é preparo intestinal?");
+      addText("O preparo intestinal consta de vários procedimentos na véspera e no dia do exame para a limpeza completa do intestino grosso.");
+
+      doc.addPage();
+      y = margin;
+
+      // PAGE 2: PREPARO
+      addTitle("Como é feito o preparo intestinal?");
+      addSubTitle("2 dias antes do exame");
+      addText("Dieta sem resíduos, deve ser feita da seguinte maneira:");
+      addListItem("Café da manhã: chá, suco, água e Gatorade.");
+      addListItem("Almoço e jantar: macarrão miojo, caldos coados, sopa líquida, ovos, purê de batata e gelatina.");
+      doc.setFont('helvetica', 'bold');
+      addText("Atenção - Alimentos proibidos:");
+      addListItem("Alimentos com resíduos como: verduras frescas ou cozidas, frutas (inclusive casca e semente), alimentos sólidos (arroz, feijão, carne, etc), algas ou cogumelos.");
+      addListItem("Líquidos: sucos naturais ou artificiais na cor vermelha, leite, bebida alcoólica, café.");
+      y += 5;
+      
+      addSubTitle("1 dia antes do exame");
+      addListItem("Café da manhã: chá, suco, água de coco, Gatorade.");
+      addListItem("Almoço e jantar: macarrão miojo, caldos coados, sopa líquida, ovos, purê de batata e gelatina.");
+      addListItem("Tomar dois comprimidos de Dulcolax as 14:00 horas e outros dois comprimidos as 20:00 horas. O Dulcolax pode causar cólica intestinal e, caso não existam contra-indicações (como alergia), recomenda-se tomar Buscopam (1 comprimido ou 30 gotas).");
+      addListItem("O jantar deverá ser realizado as 19:00 horas, após este horário só é permitida a ingestão de líquidos claros.");
+      addListItem("Tome seus medicamentos normalmente.");
+      addListItem("Tomar bastante líquido neste dia (água, chá, suco de frutas coado, água de coco).");
+      y += 5;
+
+      addSubTitle("Dia do exame");
+      addListItem("Cinco horas antes do exame, iniciar o preparo com Manitol. Misture 2 frascos de Manitol(250 ml), um frasco de Simeticona (Luftal) e 500ml de água. A solução terá 1 litro e será mais fácil de tomar se estiver gelada e se acrescentar suco de um limão.");
+      addListItem("Tomar um copo de 250 ml da solução a cada 15 minutos, terminando dentro do intervalo de uma hora. Se sentir náusea ou vômitos durante o preparo recomenda-se tomar Plasil (1 comprimido ou 30 gotas).");
+      addListItem("Nesse intervalo, as evacuações serão líquidas na cor amarelada e sem resíduos. Após término da mistura, jejum absoluto de quatro horas, antes do exame.");
+      
+      doc.addPage();
+      y = margin;
+
+      // PAGE 3: INFORMAÇÕES FINAIS E CUSTOS
+      addTitle("Informações Importantes");
+      addListItem("Os medicamentos para DIABETES e INSULINA não devem ser tomados no dia do exame, devido ao risco de hipoglicemia.");
+      addListItem("Os remédios diários para pressão alta e convulsão devem ser tomados normalmente.");
+      addListItem("No dia do exame não use esmalte nem acessórios, como jóias e bijuterias.");
+      addListItem("Use roupas confortáveis. Trazer uma troca de roupa.");
+      addListItem("Traga os exames realizados anteriormente (colonoscopia, endoscopia, tomografia, ultra-som).");
+      addText("Todo paciente deverá estar acompanhado de uma pessoa maior de 18 anos e não pode dirigir após o exame. Respeitando critérios de segurança e as normas da legislação Brasileira (SS-169/96, CFM 1.409/94 e SS-SP 2/2006) é obrigatória a presença de um acompanhante até o retorno do paciente à sua residência. É proibido dirigir e tomar decisões importantes nas 12 horas seguintes ao exame, pois, devido aos medicamentos usados, o paciente pode se manter sonolento e com retardo dos reflexos.");
+      
+      y += 5;
       doc.setDrawColor(200);
       doc.line(margin, y, doc.internal.pageSize.width - margin, y);
-      y += 15;
-
-      // Seção Informativo
-      doc.setFontSize(14);
-      doc.setTextColor(42, 109, 176);
-      doc.text("Informativo do Procedimento de Colonoscopia", margin, y);
-      y += 8;
-
-      doc.setFontSize(10);
-      doc.setTextColor(51, 51, 51); // #333
-      doc.setFont('helvetica', 'bold');
-      doc.text("O que é Colonoscopia?", margin, y); y += 5;
-      doc.setFont('helvetica', 'normal');
-      let text = "Colonoscopia é um exame realizado por médicos especialistas, para diagnosticar e tratar doenças do cólon (intestino grosso). Dura cerca de 30 minutos, sendo realizado sob sedação. O exame é rápido, tranquilo e indolor. É um exame extremamente preciso e muito importante para diversos diagnósticos e também para rastreio de câncer de intestino.";
-      let lines = doc.splitTextToSize(text, maxWidth);
-      doc.text(lines, margin, y); y += lines.length * 4 + 5;
-
-      y = checkPageBreak(y);
-      doc.setFont('helvetica', 'bold');
-      doc.text("Como é feito o exame de Colonoscopia?", margin, y); y += 5;
-      doc.setFont('helvetica', 'normal');
-      text = "Para permitir a visualização do intestino é necessário remover completamente as fezes por meio do preparo intestinal, que tem início nos dias que antecedem o exame. O Sr.(a) será encaminhado para sala de exames por um profissional da equipe de enfermagem e será submetido a uma rápida entrevista que permite conhecer melhor sua condição de saúde e planejar o procedimento de sedação a ser utilizado. Após a administração da sedação, o médico endoscopista introduz o endoscópio através do canal anal e o conduz suavemente através do intestino grosso, realizando um exame cuidadoso sem que o paciente sinta desconforto ou dor. A duração aproximada do procedimento é de 30 minutos. O tempo de permanência no setor é de aproximadamente 1 hora.";
-      lines = doc.splitTextToSize(text, maxWidth);
-      doc.text(lines, margin, y); y += lines.length * 4 + 5;
-
-      // ... continua com o resto dos textos da mesma forma ...
-      y = checkPageBreak(y);
-      doc.setFont('helvetica', 'bold');
-      doc.text("O que acontece após a Colonoscopia?", margin, y); y += 5;
-      doc.setFont('helvetica', 'normal');
-      text = "Terminado o exame, o paciente é encaminhado para a sala de recuperação pós-anestésica onde é monitorado até que esteja bem acordado e tenha condições de alta. Após o exame normalmente o paciente não apresenta sintomas, sendo raras as manifestações de náuseas, desconforto abdominal e cólica, sintomas que normalmente melhoram após a eliminação do ar insuflado no intestino durante o exame. A equipe da endoscopia irá informá-lo(la) caso exista algum cuidado especial não previsto antes do exame.";
-      lines = doc.splitTextToSize(text, maxWidth);
-      doc.text(lines, margin, y); y += lines.length * 4 + 5;
-      
-      y = checkPageBreak(y);
-      doc.setFont('helvetica', 'bold');
-      doc.text("Quais as possíveis complicações com a realização da Colonoscopia?", margin, y); y += 5;
-      doc.setFont('helvetica', 'normal');
-      text = "Apesar de todos os cuidados tomados, algumas complicações leves podem ocorrer. A incidência geral de complicações em Colonoscopia é rara, em torno de 1:1000 exames. Complicações maiores são extremamente raras e incluem reações medicamentosas, complicações cardíacas e pulmonares. A perfuração intestinal pode ocorrer em 0,1% das Colonoscopias diagnósticas e 0,3% das Colonoscopias com procedimentos terapêuticos. Sangramentos em pequena quantidade podem ocorrer (0,06%) e são controlados durante a Colonoscopia.";
-      lines = doc.splitTextToSize(text, maxWidth);
-      doc.text(lines, margin, y); y += lines.length * 4 + 5;
-
-      y = checkPageBreak(y);
-      doc.setFont('helvetica', 'bold');
-      doc.text("O que é preparo intestinal?", margin, y); y += 5;
-      doc.setFont('helvetica', 'normal');
-      text = "O preparo intestinal consta de vários procedimentos na véspera e no dia do exame para a limpeza completa do intestino grosso.";
-      lines = doc.splitTextToSize(text, maxWidth);
-      doc.text(lines, margin, y); y += lines.length * 4 + 10;
-
-      // Adiciona uma nova página se o conteúdo for muito grande
-      doc.addPage();
-      y = margin;
-
-      // Seção Preparo
-      doc.setFontSize(14);
-      doc.setTextColor(42, 109, 176);
-      doc.text("Como é feito o preparo intestinal?", margin, y); y+= 10;
-
-      doc.setFontSize(10);
-      doc.setTextColor(51, 51, 51);
-      doc.setFont('helvetica', 'bold');
-      doc.text("2 dias antes do exame", margin, y); y += 6;
-      doc.setFont('helvetica', 'normal');
-      doc.text("- Café da manhã: chá, suco, água e Gatorade.", margin + 5, y); y+=5;
-      doc.text("- Almoço e jantar: macarrão miojo, caldos coados, sopa líquida, ovos, purê de batata e gelatina.", margin + 5, y); y+=5;
-      doc.setFont('helvetica', 'bold');
-      doc.text("Atenção - Alimentos proibidos:", margin + 5, y); y+=5;
-      doc.setFont('helvetica', 'normal');
-      doc.text("- Alimentos com resíduos como: verduras frescas ou cozidas, frutas (inclusive casca e semente), alimentos sólidos (arroz, feijão, carne, etc), algas ou cogumelos.", margin + 10, y); y+=5;
-      doc.text("- Líquidos: sucos naturais ou artificiais na cor vermelha, leite, bebida alcoólica, café.", margin + 10, y); y+=8;
-
-      y = checkPageBreak(y);
-      doc.setFont('helvetica', 'bold');
-      doc.text("1 dia antes do exame", margin, y); y += 6;
-      doc.setFont('helvetica', 'normal');
-      doc.text("- Café da manhã: chá, suco, água de coco, Gatorade.", margin + 5, y); y+=5;
-      doc.text("- Almoço e jantar: macarrão miojo, caldos coados, sopa líquida, ovos, purê de batata e gelatina.", margin + 5, y); y+=5;
-      doc.text("- Tomar dois comprimidos de Dulcolax as 14:00 horas e outros dois comprimidos as 20:00 horas. O Dulcolax pode causar cólica intestinal e, caso não existam contra-indicações (como alergia), recomenda-se tomar Buscopam (1 comprimido ou 30 gotas).", margin + 5, y); y+=10;
-      doc.text("- O jantar deverá ser realizado as 19:00 horas, após este horário só é permitida a ingestão de líquidos claros.", margin + 5, y); y+=5;
-      doc.text("- Tome seus medicamentos normalmente.", margin + 5, y); y+=5;
-      doc.text("- Tomar bastante líquido neste dia (água, chá, suco de frutas coado, água de coco).", margin + 5, y); y+=8;
-
-      y = checkPageBreak(y);
-      doc.setFont('helvetica', 'bold');
-      doc.text("Dia do exame", margin, y); y += 6;
-      doc.setFont('helvetica', 'normal');
-      text = "- Cinco horas antes do exame, iniciar o preparo com Manitol. Misture 2 frascos de Manitol(250 ml), um frasco de Simeticona (Luftal) e 500ml de água. A solução terá 1 litro e será mais fácil de tomar se estiver gelada e se acrescentar suco de um limão.";
-      lines = doc.splitTextToSize(text, maxWidth - 5); doc.text(lines, margin + 5, y); y += lines.length * 4 + 2;
-      text = "- Tomar um copo de 250 ml da solução a cada 15 minutos, terminando dentro do intervalo de uma hora. Se sentir náusea ou vômitos durante o preparo recomenda-se tomar Plasil (1 comprimido ou 30 gotas).";
-      lines = doc.splitTextToSize(text, maxWidth - 5); doc.text(lines, margin + 5, y); y += lines.length * 4 + 2;
-      text = "- Nesse intervalo, as evacuações serão líquidas na cor amarelada e sem resíduos. Após término da mistura, jejum absoluto de quatro horas, antes do exame.";
-      lines = doc.splitTextToSize(text, maxWidth - 5); doc.text(lines, margin + 5, y); y += lines.length * 4 + 8;
-      
-      // Nova Página para Informações e Custos
-      doc.addPage();
-      y = margin;
-      
-      doc.setFontSize(14); doc.setTextColor(42, 109, 176); doc.text("Informações Importantes", margin, y); y += 8;
-      doc.setFontSize(10); doc.setTextColor(51, 51, 51); doc.setFont('helvetica', 'normal');
-      const informacoes = [
-        "Os medicamentos para DIABETES e INSULINA não devem ser tomados no dia do exame, devido ao risco de hipoglicemia.",
-        "Os remédios diários para pressão alta e convulsão devem ser tomados normalmente.",
-        "No dia do exame não use esmalte nem acessórios, como jóias e bijuterias.",
-        "Use roupas confortáveis. Trazer uma troca de roupa.",
-        "Traga os exames realizados anteriormente (colonoscopia, endoscopia, tomografia, ultra-som).",
-        "Todo paciente deverá estar acompanhado de uma pessoa maior de 18 anos e não pode dirigir após o exame. Respeitando critérios de segurança e as normas da legislação Brasileira (SS-169/96, CFM 1.409/94 e SS-SP 2/2006) é obrigatória a presença de um acompanhante até o retorno do paciente à sua residência. É proibido dirigir e tomar decisões importantes nas 12 horas seguintes ao exame, pois, devido aos medicamentos usados, o paciente pode se manter sonolento e com retardo dos reflexos."
-      ];
-      informacoes.forEach(info => {
-          lines = doc.splitTextToSize("- " + info, maxWidth - 5); doc.text(lines, margin + 5, y); y += lines.length * 4 + 3;
-      });
       y += 10;
       
-      doc.setFontSize(14); doc.setTextColor(42, 109, 176); doc.text("Custos Adicionais e Pagamento", margin, y); y += 7;
-      doc.setFontSize(10); doc.setTextColor(51, 51, 51); doc.setFont('helvetica', 'normal');
-      const textosCusto = [
-        "Atenção: Pacientes Particulares ou com Convênios sem Cobertura para itens adicionais.",
-        "O pagamento do valor base do exame (Colonoscopia: R$ 900,00) é realizado antes do procedimento. Custos adicionais, se necessários, são apurados e pagos após o exame.",
-        "Como o paciente sai do exame sob efeito de sedação, é fundamental que o acompanhante esteja ciente e preparado para realizar o pagamento de eventuais valores extras."
-      ];
-      textosCusto.forEach(txt => { lines = doc.splitTextToSize(txt, maxWidth); doc.text(lines, margin, y); y += lines.length * 4 + 3; });
-      y += 2;
+      addTitle("Custos Adicionais e Pagamento");
+      addText("Atenção: Pacientes Particulares ou com Convênios sem Cobertura para itens adicionais.");
+      addText("O pagamento do valor base do exame (Colonoscopia: R$ 900,00) é realizado antes do procedimento. Custos adicionais, se necessários, são apurados e pagos após o exame.");
+      addText("Como o paciente sai do exame sob efeito de sedação, é fundamental que o acompanhante esteja ciente e preparado para realizar o pagamento de eventuais valores extras.");
       
-      doc.autoTable({ startY: y, head: [['Serviço Adicional', 'Valor (R$)', 'Observação']], body: [['Coleta de Biópsia', '216,00', '-'], ['Análise Anatomopatológica', '118,00', 'Por amostra'], ['Polipectomia (Pólipo de Colon)', '800,00', 'Caso tenha'], ['Hemostasia', '1.000,00', 'Caso necessário'], ['Hemoclipes', '678,00', 'Caso necessário'], ['Mucosectomia', '1.000,00', 'Caso tenha'], ['Internação (12h)', '350,00', 'Se for necessário']], theme: 'grid', headStyles: { fillColor: [240, 244, 247] }, styles: { fontSize: 9 } });
+      y += 2;
+      doc.autoTable({
+        startY: y,
+        head: [['Serviço Adicional', 'Valor (R$)', 'Observação']],
+        body: [
+          ['Coleta de Biópsia', '216,00', '-'],
+          ['Análise Anatomopatológica', '118,00', 'Por amostra'],
+          ['Polipectomia (Pólipo de Colon)', '800,00', 'Caso tenha'],
+          ['Hemostasia', '1.000,00', 'Caso necessário'],
+          ['Hemoclipes', '678,00', 'Caso necessário'],
+          ['Mucosectomia', '1.000,00', 'Caso tenha'],
+          ['Internação (12h)', '350,00', 'Se for necessário'],
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [240, 244, 247], textColor: 51 },
+        styles: { fontSize: 9, cellPadding: 2 }
+      });
       y = doc.lastAutoTable.finalY + 10;
 
-      doc.setFont('helvetica', 'bold'); doc.text("Formas de Pagamento:", margin, y); y += 5;
-      doc.setFont('helvetica', 'normal'); text = "Dinheiro, PIX, Débito e Crédito. O parcelamento pode ser negociado a depender do valor total.";
-      lines = doc.splitTextToSize(text, maxWidth); doc.text(lines, margin, y);
+      addSubTitle("Formas de Pagamento:");
+      addText("Dinheiro, PIX, Débito e Crédito. O parcelamento pode ser negociado a depender do valor total.");
 
+      // Salvar
       doc.save('preparo-colonoscopia.pdf');
       btn.disabled = false;
       btn.innerText = '📄 Baixar Preparo em PDF';
     }
-
-    document.addEventListener("DOMContentLoaded", () => { const hoje = new Date(); const dd = String(hoje.getDate()).padStart(2,'0'); const mm = String(hoje.getMonth()+1).padStart(2,'0'); const yyyy = hoje.getFullYear(); document.getElementById("dataEntrevista").value = `${dd}/${mm}/${yyyy}`; });
-    function calcularIMC() { const peso = parseFloat(document.getElementById("peso")?.value); const altura = parseFloat(document.getElementById("altura")?.value); if (peso > 0 && altura > 0) { const imc = (peso / (altura * altura)).toFixed(2); document.getElementById("imc").value = imc; } else { document.getElementById("imc").value = ""; } }
   </script>
 </body>
 </html>
