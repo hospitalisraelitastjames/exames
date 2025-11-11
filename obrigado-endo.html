@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulário recebido!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Bibliotecas para gerar PDF -->
+  <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+  <script src="https://unpkg.com/jspdf-autotable@latest/dist/jspdf.plugin.autotable.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f3f8fc; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .container { text-align: center; background: #fff; padding: 30px; border-radius: 15px; max-width: 500px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+    h1 { color: #2a6db0; font-size: 1.8em; margin-bottom: 15px; }
+    p { font-size: 1.1em; color: #333; margin: 10px 0; }
+    button, a { display: inline-block; margin-top: 20px; padding: 12px 25px; color: white; text-decoration: none; border-radius: 30px; transition: background 0.3s; border: none; font-size: 1.1em; cursor: pointer; }
+    .btn-pdf { background: #2a6db0; }
+    .btn-pdf:hover { background: #1a4e80; }
+    .btn-pdf:disabled { background: #969ca1; cursor: not-allowed; }
+    .btn-finalizar { background: #6c757d; }
+    .btn-finalizar:hover { background: #5a6268; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>✅ Formulário enviado!</h1>
+    <p>Obrigado! Seus dados foram recebidos.</p>
+    <p>Agora você pode baixar o <strong>preparo para a Endoscopia</strong> e as informações de pagamento.</p>
+    
+    <button class="btn-pdf" id="btn-pdf-endo" onclick="gerarPDF()">📄 Baixar Preparo em PDF</button>
+    
+    <hr style="margin-top: 30px; border: 0; border-top: 1px solid #eee;">
+    
+    <a href="https://www.hospitalstjames.com.br/" class="btn-finalizar">Finalizar</a>
+  </div>
+  <script>
+    function gerarPDF() {
+      const btn = document.getElementById('btn-pdf-endo');
+      btn.disabled = true;
+      btn.innerText = 'Gerando PDF...';
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      
+      let y = 15;
+      const margin = 15;
+      const maxWidth = doc.internal.pageSize.width - margin * 2;
+
+      function addHeader() { doc.setFontSize(18); doc.setTextColor(42, 109, 176); doc.text("Preparo e Custos - Endoscopia", doc.internal.pageSize.width / 2, y, { align: 'center' }); y += 10; doc.setDrawColor(200); doc.line(margin, y, doc.internal.pageSize.width - margin, y); y += 15; }
+      function checkPageBreak(currentY, neededHeight = 20) { if (currentY + neededHeight > doc.internal.pageSize.height - margin) { doc.addPage(); y = margin; return margin; } return currentY; }
+      function addTitle(title, size = 14) { y = checkPageBreak(y); doc.setFontSize(size); doc.setTextColor(42, 109, 176); doc.text(title, margin, y); y += (size / 2); }
+      function addSubTitle(title) { y = checkPageBreak(y); doc.setFontSize(11); doc.setTextColor(51, 51, 51); doc.setFont('helvetica', 'bold'); doc.text(title, margin, y); y += 6; }
+      function addText(text) { y = checkPageBreak(y); doc.setFontSize(10); doc.setTextColor(51, 51, 51); doc.setFont('helvetica', 'normal'); const lines = doc.splitTextToSize(text, maxWidth); if (y + (lines.length * 5) > doc.internal.pageSize.height - margin) { doc.addPage(); y = margin; } doc.text(lines, margin, y); y += lines.length * 5 + 4; }
+      function addListItem(text) { y = checkPageBreak(y, 10); doc.setFontSize(10); doc.setTextColor(51, 51, 51); doc.setFont('helvetica', 'normal'); const lines = doc.splitTextToSize(text, maxWidth - 5); doc.text("-", margin, y); doc.text(lines, margin + 5, y); y += lines.length * 5 + 2; }
+
+      addHeader();
+      addTitle("CENTRO DE ENDOSCOPIA DIGESTIVA");
+      addSubTitle("Devo realizar algum preparo?");
+      addText("Para a realização de um exame seguro, é necessário um jejum absoluto (água e alimentos) por 12 horas. Este cuidado é muito importante, pois minimiza o risco do refluxo de alimentos que podem ir para o pulmão.");
+      y += 5;
+      addSubTitle("INFORMAÇÕES IMPORTANTES");
+      addListItem("Os medicamentos para DIABETES e INSULINA não devem ser tomados no dia do exame, devido ao risco de hipoglicemia.");
+      addListItem("Os remédios diários de pressão alta e convulsão devem ser tomados até 2 horas antes do exame, com pouca água (50ml).");
+      addListItem("No dia do exame não use esmalte, acessórios como joias e bijuterias.");
+      addListItem("Trazer uma toalha de rosto.");
+      addListItem("Vir acompanhado com maior de 18 anos.");
+      addListItem("Traga os exames realizados anteriormente (Colonoscopia, Endoscopia, Tomografia, ultrassonografia(s).).");
+      addListItem("Comparecer 20 minutos antes do horário agendado.");
+      addText("Todo paciente deverá estar acompanhado de uma pessoa maior de 18 anos e não pode dirigir após o exame. Respeitando critérios de segurança e as normas da legislação Brasileira (SS-169/96, CFM 1.409/94 e SS-SP 2/2006) é obrigatória a presença de um acompanhante até o retorno do paciente à sua residência. É proibido dirigir e tomar decisões importantes nas 12 horas seguintes ao exame, pois, devido aos medicamentos usados, o paciente pode se manter sonolento e com retardo dos reflexos.");
+      
+      y = checkPageBreak(y, 80);
+      y += 5; doc.setDrawColor(200); doc.line(margin, y, doc.internal.pageSize.width - margin, y); y += 10;
+      
+      addTitle("Custos Adicionais e Pagamento");
+      addText("Atenção: Pacientes Particulares ou com Convênios sem Cobertura para itens adicionais.");
+      addText("O pagamento do valor base do exame (Endoscopia: R$ 600,00) é realizado antes do procedimento. Custos adicionais, se necessários, são apurados e pagos após o exame.");
+      addText("Como o paciente sai do exame sob efeito de sedação, é fundamental que o acompanhante esteja ciente e preparado para realizar o pagamento de eventuais valores extras.");
+      
+      y += 2;
+      doc.autoTable({
+        startY: y,
+        head: [['Serviço Adicional', 'Valor (R$)', 'Observação']],
+        body: [['Coleta de Biópsia', '216,00', '-'],['Análise Anatomopatológica', '118,00', 'Por amostra'],['Polipectomia (Pólipo de EDA)', '600,00', 'Caso tenha'],['Hemostasia', '1.000,00', 'Caso necessário'],['Hemoclipes', '678,00', 'Caso necessário'],['Mucosectomia', '1.000,00', 'Caso tenha'],['Internação (12h)', '350,00', 'Se for necessário']],
+        theme: 'grid', headStyles: { fillColor: [240, 244, 247], textColor: 51 }, styles: { fontSize: 9, cellPadding: 2 }
+      });
+      y = doc.lastAutoTable.finalY + 10;
+      
+      addSubTitle("Formas de Pagamento:");
+      addText("Dinheiro, PIX, Débito e Crédito. O parcelamento pode ser negociado a depender do valor total.");
+
+      doc.save('preparo-endoscopia.pdf');
+      btn.disabled = false;
+      btn.innerText = '📄 Baixar Preparo em PDF';
+    }
+  </script>
+</body>
+</html>
