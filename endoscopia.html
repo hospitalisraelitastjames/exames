@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Entrevista Endoscopia</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Bibliotecas para gerar PDF (sem html2canvas) -->
+  <!-- Bibliotecas para gerar PDF -->
   <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
   <script src="https://unpkg.com/jspdf-autotable@latest/dist/jspdf.plugin.autotable.js"></script>
   <style>
@@ -19,6 +19,8 @@
     input, textarea { width: 100%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #bbb; font-size: 1em; box-sizing: border-box; background: #fafafa; }
     .yes-no { margin-top: 6px; display: flex; gap: 20px; flex-wrap: wrap; }
     .yes-no label { font-weight: normal; background: #f0f4f7; padding: 6px 12px; border-radius: 20px; cursor: pointer; }
+    .checkbox label { display: flex; align-items: center; margin: 6px 0; font-weight: normal; }
+    .checkbox input[type="checkbox"] { margin-right: 8px; width: auto; }
     .alerta { background: #fff4e6; border: 1px solid #f5c190; padding: 15px; border-radius: 10px; font-size: 0.95em; color: #333; margin-top: 15px; }
     .responsabilidade { font-size: 0.9em; color: #444; background: #f9f9f9; border: 1px solid #ddd; padding: 12px; border-radius: 8px; margin-top: 20px; }
     .botoes-acao { display: flex; flex-direction: column; gap: 10px; margin-top: 25px; }
@@ -39,11 +41,89 @@
   <div class="container">
     <h1>Hospital Israelita St. James Jarinu</h1>
     <h2>Entrevista para Elegibilidade<br> Exame de Endoscopia</h2>
+
     <form action="https://formsubmit.co/gestaopa@hospitalstjames.com.br" method="POST">
-      <!-- ... (demais campos do formulário) ... -->
-      <fieldset> <legend>Dados Pessoais</legend> <label>Data da Entrevista:</label> <input type="text" id="dataEntrevista" name="Data da entrevista" readonly> <label>Nome completo:</label><input type="text" name="Nome do paciente" required> <label>Contato:</label><input type="tel" name="Telefone de contato" placeholder="(xx) xxxxx-xxxx" required> <label>Convênio:</label><input type="text" name="Convênio"> <label>Data de nascimento:</label><input type="date" name="Data de nascimento"> </fieldset>
-      <fieldset> <legend>Histórico do Exame</legend> <label>Já realizou esse exame?</label> <div class="yes-no"><label><input type="radio" name="Já realizou endoscopia" value="sim"> Sim</label><label><input type="radio" name="Já realizou endoscopia" value="nao"> Não</label></div> <label>Quanto tempo faz?</label><input type="text" name="Tempo desde último exame"> <label>Idade:</label><input type="number" name="Idade"> <label>Peso (kg):</label><input type="number" step="0.1" id="peso" name="Peso (kg)" oninput="calcularIMC()"> <label>Altura (m):</label><input type="number" step="0.01" id="altura" name="Altura (m)" oninput="calcularIMC()"> <label>IMC (automático):</label><input type="text" id="imc" name="IMC" readonly> </fieldset>
-      <fieldset> <legend>Histórico de Saúde</legend> <label>Deficiência neurológica?</label><div class="yes-no"><label><input type="radio" name="Deficiência neurológica" value="sim"> Sim</label><label><input type="radio" name="Deficiência neurológica" value="nao"> Não</label></div> <label>Problema cardíaco?</label><div class="yes-no"><label><input type="radio" name="Problema cardíaco" value="sim"> Sim</label><label><input type="radio" name="Problema cardíaco" value="nao"> Não</label></div> <label>Qual?</label><input type="text" name="Tipo de problema cardíaco"> <label>Problema respiratório?</label><div class="yes-no"><label><input type="radio" name="Problema respiratório" value="sim"> Sim</label><label><input type="radio" name="Problema respiratório" value="nao"> Não</label></div> <label>Qual?</label><input type="text" name="Tipo de problema respiratório"> <label>Alergia a medicamento?</label><div class="yes-no"><label><input type="radio" name="Alergia a medicamento" value="sim"> Sim</label><label><input type="radio" name="Alergia a medicamento" value="nao"> Não</label></div> <label>Qual?</label><input type="text" name="Medicamento - alergia"> <label>Uso de anticoagulantes?</label><div class="yes-no"><label><input type="radio" name="Uso de anticoagulantes" value="sim"> Sim</label><label><input type="radio" name="Uso de anticoagulantes" value="nao"> Não</label></div> <label>Qual?</label><input type="text" name="Qual anticoagulante"> <label>Uso de outros medicamentos?</label><div class="yes-no"><label><input type="radio" name="Uso de outros medicamentos" value="sim"> Sim</label><label><input type="radio" name="Uso de outros medicamentos" value="nao"> Não</label></div> <label>Quais?</label><textarea name="Quais medicamentos"></textarea> <label>Uso de insulina ou medicação p/ diabetes hoje?</label><div class="yes-no"><label><input type="radio" name="Uso de insulina/medicação diabetes" value="sim"> Sim</label><label><input type="radio" name="Uso de insulina/medicação diabetes" value="nao"> Não</label></div> <label>Já teve hepatite B ou C?</label><div class="yes-no"><label><input type="radio" name="Hepatite B ou C" value="sim"> Sim</label><label><input type="radio" name="Hepatite B ou C" value="nao"> Não</label></div> <label>Já foi sedado?</label><div class="yes-no"><label><input type="radio" name="Já foi sedado" value="sim"> Sim</label><label><input type="radio" name="Já foi sedado" value="nao"> Não</label></div> <label>Teve algum problema?</label><input type="text" name="Problema na sedação"> <label>Já realizou cirurgia?</label><div class="yes-no"><label><input type="radio" name="Já realizou cirurgia" value="sim"> Sim</label><label><input type="radio" name="Já realizou cirurgia" value="nao"> Não</label></div> <label>Qual cirurgia?</label><input type="text" name="Qual cirurgia realizada"> <label>Tabagista (fumante)?</label><div class="yes-no"><label><input type="radio" name="Tabagista (fumante)" value="sim"> Sim</label><label><input type="radio" name="Tabagista (fumante)" value="nao"> Não</label></div> <label>Consome bebida alcoólica (etilista)?</label><div class="yes-no"><label><input type="radio" name="Consome bebida alcoólica (etilista)" value="sim"> Sim</label><label><input type="radio" name="Consome bebida alcoólica (etilista)" value="nao"> Não</label></div> </fieldset>
+      <input type="hidden" name="_subject" value="📋 Nova Entrevista - Endoscopia">
+      <input type="hidden" name="_next" value="https://hospitalisraelitastjames.github.io/exames/obrigado.html">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="text" name="_honey" style="display:none">
+
+      <fieldset>
+        <legend>Dados Pessoais</legend>
+        <label>Data da Entrevista:</label>
+        <input type="text" id="dataEntrevista" name="Data da entrevista" readonly>
+        <label>Nome completo:</label><input type="text" name="Nome do paciente" required>
+        <label>Contato:</label><input type="tel" name="Telefone de contato" placeholder="(xx) xxxxx-xxxx" required>
+        <label>Convênio:</label><input type="text" name="Convênio">
+        <label>Data de nascimento:</label><input type="date" name="Data de nascimento">
+      </fieldset>
+
+      <fieldset>
+        <legend>Histórico do Exame</legend>
+        <label>Já realizou esse exame?</label>
+        <div class="yes-no"><label><input type="radio" name="Já realizou endoscopia" value="sim"> Sim</label><label><input type="radio" name="Já realizou endoscopia" value="nao"> Não</label></div>
+        <label>Quanto tempo faz?</label><input type="text" name="Tempo desde último exame">
+        <label>Idade:</label><input type="number" name="Idade">
+        <label>Peso (kg):</label><input type="number" step="0.1" id="peso" name="Peso (kg)" oninput="calcularIMC()">
+        <label>Altura (m):</label><input type="number" step="0.01" id="altura" name="Altura (m)" oninput="calcularIMC()">
+        <label>IMC (automático):</label><input type="text" id="imc" name="IMC" readonly>
+      </fieldset>
+
+      <fieldset>
+        <legend>Histórico de Saúde</legend>
+        <label>Deficiência neurológica?</label><div class="yes-no"><label><input type="radio" name="Deficiência neurológica" value="sim"> Sim</label><label><input type="radio" name="Deficiência neurológica" value="nao"> Não</label></div>
+        <label>Problema cardíaco?</label><div class="yes-no"><label><input type="radio" name="Problema cardíaco" value="sim"> Sim</label><label><input type="radio" name="Problema cardíaco" value="nao"> Não</label></div>
+        <label>Qual?</label><input type="text" name="Tipo de problema cardíaco">
+        <label>Problema respiratório?</label><div class="yes-no"><label><input type="radio" name="Problema respiratório" value="sim"> Sim</label><label><input type="radio" name="Problema respiratório" value="nao"> Não</label></div>
+        <label>Qual?</label><input type="text" name="Tipo de problema respiratório">
+        <label>Alergia a medicamento?</label><div class="yes-no"><label><input type="radio" name="Alergia a medicamento" value="sim"> Sim</label><label><input type="radio" name="Alergia a medicamento" value="nao"> Não</label></div>
+        <label>Qual?</label><input type="text" name="Medicamento - alergia">
+        <label>Uso de anticoagulantes?</label><div class="yes-no"><label><input type="radio" name="Uso de anticoagulantes" value="sim"> Sim</label><label><input type="radio" name="Uso de anticoagulantes" value="nao"> Não</label></div>
+        <label>Qual?</label><input type="text" name="Qual anticoagulante">
+        <label>Uso de outros medicamentos?</label><div class="yes-no"><label><input type="radio" name="Uso de outros medicamentos" value="sim"> Sim</label><label><input type="radio" name="Uso de outros medicamentos" value="nao"> Não</label></div>
+        <label>Quais?</label><textarea name="Quais medicamentos"></textarea>
+        <label>Uso de insulina ou medicação p/ diabetes hoje?</label><div class="yes-no"><label><input type="radio" name="Uso de insulina/medicação diabetes" value="sim"> Sim</label><label><input type="radio" name="Uso de insulina/medicação diabetes" value="nao"> Não</label></div>
+        <label>Já teve hepatite B ou C?</label><div class="yes-no"><label><input type="radio" name="Hepatite B ou C" value="sim"> Sim</label><label><input type="radio" name="Hepatite B ou C" value="nao"> Não</label></div>
+        <label>Já foi sedado?</label><div class="yes-no"><label><input type="radio" name="Já foi sedado" value="sim"> Sim</label><label><input type="radio" name="Já foi sedado" value="nao"> Não</label></div>
+        <label>Teve algum problema?</label><input type="text" name="Problema na sedação">
+        <label>Já realizou cirurgia?</label><div class="yes-no"><label><input type="radio" name="Já realizou cirurgia" value="sim"> Sim</label><label><input type="radio" name="Já realizou cirurgia" value="nao"> Não</label></div>
+        <label>Qual cirurgia?</label><input type="text" name="Qual cirurgia realizada">
+        <label>Tabagista (fumante)?</label><div class="yes-no"><label><input type="radio" name="Tabagista (fumante)" value="sim"> Sim</label><label><input type="radio" name="Tabagista (fumante)" value="nao"> Não</label></div>
+        <label>Consome bebida alcoólica (etilista)?</label><div class="yes-no"><label><input type="radio" name="Consome bebida alcoólica (etilista)" value="sim"> Sim</label><label><input type="radio" name="Consome bebida alcoólica (etilista)" value="nao"> Não</label></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Para uso do hospital</legend>
+        <label>Paciente necessita atestado médico?</label><div class="yes-no"><label><input type="radio" name="Necessita atestado médico" value="sim"> Sim</label><label><input type="radio" name="Necessita atestado médico" value="nao"> Não</label></div>
+        <label>Acompanhante necessita declaração?</label><div class="yes-no"><label><input type="radio" name="Acompanhante necessita declaração" value="sim"> Sim</label><label><input type="radio" name="Acompanhante necessita declaração" value="nao"> Não</label></div>
+        <label>Paciente recebeu preparo?</label><div class="yes-no"><label><input type="radio" name="Preparo recebido" value="sim"> Sim</label><label><input type="radio" name="Preparo recebido" value="nao"> Não</label></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Sintomas</legend>
+        <div class="checkbox">
+          <label><input type="checkbox" name="Sintomas[]" value="Dificuldade para engolir"> Dificuldade para engolir</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Refluxo"> Refluxo</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Dor Abdominal"> Dor Abdominal</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Má digestão"> Má digestão</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Pigarro na garganta"> Pigarro na garganta</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Náuseas"> Náuseas</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Queimação no peito"> Queimação no peito</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Tosse"> Tosse</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Dor de garganta"> Dor de garganta</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Arroto"> Arroto</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Sensação de bolo na garganta"> Sensação de "bolo" na garganta</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Vômito"> Vômito</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Dor no peito"> Dor no peito</label>
+          <label><input type="checkbox" name="Sintomas[]" value="Azia"> Azia</label>
+          <label><input type="checkbox" id="outrosSintomasCheck" name="Sintomas[]" value="Outros"> Outros</label>
+        </div>
+        <div id="campoOutrosSintomas" style="display:none; margin-top:10px;">
+          <label>Descreva os outros sintomas:</label>
+          <textarea name="Outros sintomas"></textarea>
+        </div>
+      </fieldset>
+
       <fieldset>
         <legend>Custos Adicionais e Pagamento</legend>
         <div class="alerta info-pagamento">
@@ -59,7 +139,9 @@
         <p>Está ciente e de acordo com as condições acima?</p>
         <div class="yes-no"><label><input type="radio" name="Acordo com custos" value="sim" required> Sim</label><label><input type="radio" name="Acordo com custos" value="nao"> Não</label></div>
       </fieldset>
+
       <fieldset> <div class="alerta"> <p><strong>Importante:</strong></p> <p>O atestado médico é exclusivamente para o <strong>dia do exame</strong> e não abrange os dias de preparo.</p> </div> </fieldset>
+      
       <fieldset> <legend>Declaração de Responsabilidade</legend> <div class="responsabilidade"> <p>Declaro que todas as informações prestadas neste formulário são verdadeiras e de minha inteira responsabilidade. Estou ciente de que informações incorretas podem impactar na segurança e no resultado do exame.</p> </div> <div class="yes-no"><label><input type="radio" name="Declaração de responsabilidade" value="declaro" required> Declaro que as informações são verdadeiras</label></div> </fieldset>
       
       <div class="botoes-acao">
@@ -70,106 +152,135 @@
   </div>
 
   <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const hoje = new Date();
+      const dd = String(hoje.getDate()).padStart(2,'0');
+      const mm = String(hoje.getMonth()+1).padStart(2,'0');
+      const yyyy = hoje.getFullYear();
+      document.getElementById("dataEntrevista").value = `${dd}/${mm}/${yyyy}`;
+      
+      document.getElementById("outrosSintomasCheck").addEventListener("change", function() {
+        document.getElementById("campoOutrosSintomas").style.display = this.checked ? "block" : "none";
+      });
+    });
+
+    function calcularIMC() {
+      const peso = parseFloat(document.getElementById("peso")?.value);
+      const altura = parseFloat(document.getElementById("altura")?.value);
+      if (peso > 0 && altura > 0) {
+        const imc = (peso / (altura * altura)).toFixed(2);
+        document.getElementById("imc").value = imc;
+      } else {
+        document.getElementById("imc").value = "";
+      }
+    }
+
     function gerarPDF() {
       const btn = document.getElementById('btn-pdf-endo');
       btn.disabled = true;
       btn.innerText = 'Gerando PDF...';
 
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
       
       let y = 15;
-      const pageHeight = doc.internal.pageSize.height;
       const margin = 15;
       const maxWidth = doc.internal.pageSize.width - margin * 2;
 
-      function checkPageBreak(currentY) {
-        if (currentY > pageHeight - margin) {
+      // --- Funções Auxiliares ---
+      function addHeader() {
+        doc.setFontSize(18);
+        doc.setTextColor(42, 109, 176); // #2a6db0
+        doc.text("Preparo e Custos - Endoscopia", doc.internal.pageSize.width / 2, y, { align: 'center' });
+        y += 10;
+        doc.setDrawColor(200);
+        doc.line(margin, y, doc.internal.pageSize.width - margin, y);
+        y += 15;
+      }
+      
+      function checkPageBreak(currentY, neededHeight = 20) {
+        if (currentY + neededHeight > doc.internal.pageSize.height - margin) {
           doc.addPage();
+          y = margin;
           return margin;
         }
         return currentY;
       }
 
-      // Título Principal
-      doc.setFontSize(18);
-      doc.setTextColor(42, 109, 176); // #2a6db0
-      doc.text("Preparo e Custos - Endoscopia", doc.internal.pageSize.width / 2, y, { align: 'center' });
-      y += 10;
+      function addTitle(title, size = 14) {
+        y = checkPageBreak(y);
+        doc.setFontSize(size);
+        doc.setTextColor(42, 109, 176);
+        doc.text(title, margin, y);
+        y += (size / 2);
+      }
+
+      function addSubTitle(title) {
+        y = checkPageBreak(y);
+        doc.setFontSize(11);
+        doc.setTextColor(51, 51, 51);
+        doc.setFont('helvetica', 'bold');
+        doc.text(title, margin, y);
+        y += 6;
+      }
+
+      function addText(text) {
+        y = checkPageBreak(y);
+        doc.setFontSize(10);
+        doc.setTextColor(51, 51, 51);
+        doc.setFont('helvetica', 'normal');
+        const lines = doc.splitTextToSize(text, maxWidth);
+        // Verifica se o bloco de texto cabe na página
+        if (y + (lines.length * 5) > doc.internal.pageSize.height - margin) {
+            doc.addPage();
+            y = margin;
+        }
+        doc.text(lines, margin, y);
+        y += lines.length * 5 + 4;
+      }
+      
+      function addListItem(text) {
+        y = checkPageBreak(y, 10);
+        doc.setFontSize(10);
+        doc.setTextColor(51, 51, 51);
+        doc.setFont('helvetica', 'normal');
+        const lines = doc.splitTextToSize(text, maxWidth - 5);
+        doc.text("-", margin, y);
+        doc.text(lines, margin + 5, y);
+        y += lines.length * 5 + 2;
+      }
+
+      // --- Construção do PDF ---
+      addHeader();
+
+      addTitle("CENTRO DE ENDOSCOPIA DIGESTIVA");
+      addSubTitle("Devo realizar algum preparo?");
+      addText("Para a realização de um exame seguro, é necessário um jejum absoluto (água e alimentos) por 12 horas. Este cuidado é muito importante, pois minimiza o risco do refluxo de alimentos que podem ir para o pulmão.");
+
+      y += 5;
+      addSubTitle("INFORMAÇÕES IMPORTANTES");
+      addListItem("Os medicamentos para DIABETES e INSULINA não devem ser tomados no dia do exame, devido ao risco de hipoglicemia.");
+      addListItem("Os remédios diários de pressão alta e convulsão devem ser tomados até 2 horas antes do exame, com pouca água (50ml).");
+      addListItem("No dia do exame não use esmalte, acessórios como joias e bijuterias.");
+      addListItem("Trazer uma toalha de rosto.");
+      addListItem("Vir acompanhado com maior de 18 anos.");
+      addListItem("Traga os exames realizados anteriormente (Colonoscopia, Endoscopia, Tomografia, ultrassonografia(s).).");
+      addListItem("Comparecer 20 minutos antes do horário agendado.");
+      addText("Todo paciente deverá estar acompanhado de uma pessoa maior de 18 anos e não pode dirigir após o exame. Respeitando critérios de segurança e as normas da legislação Brasileira (SS-169/96, CFM 1.409/94 e SS-SP 2/2006) é obrigatória a presença de um acompanhante até o retorno do paciente à sua residência. É proibido dirigir e tomar decisões importantes nas 12 horas seguintes ao exame, pois, devido aos medicamentos usados, o paciente pode se manter sonolento e com retardo dos reflexos.");
+      
+      y = checkPageBreak(y, 80); // Verifica se há espaço para a seção de custos
+      
+      y += 5;
       doc.setDrawColor(200);
       doc.line(margin, y, doc.internal.pageSize.width - margin, y);
-      y += 15;
-
-      // Seção Preparo
-      doc.setFontSize(14);
-      doc.setTextColor(42, 109, 176);
-      doc.text("CENTRO DE ENDOSCOPIA DIGESTIVA", margin, y);
-      y += 8;
-
-      doc.setFontSize(12);
-      doc.setTextColor(51, 51, 51); // #333
-      doc.setFont('helvetica', 'bold');
-      doc.text("Devo realizar algum preparo?", margin, y);
-      y += 7;
-
-      doc.setFont('helvetica', 'normal');
-      let text = "Para a realização de um exame seguro, é necessário um jejum absoluto (água e alimentos) por 12 horas. Este cuidado é muito importante, pois minimiza o risco do refluxo de alimentos que podem ir para o pulmão.";
-      let lines = doc.splitTextToSize(text, maxWidth);
-      doc.text(lines, margin, y);
-      y += lines.length * 5 + 5;
-
-      // Seção Informações Importantes
-      y = checkPageBreak(y);
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text("INFORMAÇÕES IMPORTANTES", margin, y);
-      y += 7;
-
-      doc.setFont('helvetica', 'normal');
-      const informacoes = [
-        "Os medicamentos para DIABETES e INSULINA não devem ser tomados no dia do exame, devido ao risco de hipoglicemia.",
-        "Os remédios diários de pressão alta e convulsão devem ser tomados até 2 horas antes do exame, com pouca água (50ml).",
-        "No dia do exame não use esmalte, acessórios como joias e bijuterias.",
-        "Trazer uma toalha de rosto.",
-        "Vir acompanhado com maior de 18 anos.",
-        "Traga os exames realizados anteriormente (Colonoscopia, Endoscopia, Tomografia, ultrassonografia(s).).",
-        "Comparecer 20 minutos antes do horário agendado.",
-        "Todo paciente deverá estar acompanhado de uma pessoa maior de 18 anos e não pode dirigir após o exame. Respeitando critérios de segurança e as normas da legislação Brasileira (SS-169/96, CFM 1.409/94 e SS-SP 2/2006) é obrigatória a presença de um acompanhante até o retorno do paciente à sua residência. É proibido dirigir e tomar decisões importantes nas 12 horas seguintes ao exame, pois, devido aos medicamentos usados, o paciente pode se manter sonolento e com retardo dos reflexos."
-      ];
-      informacoes.forEach(info => {
-        y = checkPageBreak(y);
-        lines = doc.splitTextToSize("- " + info, maxWidth - 5);
-        doc.text(lines, margin + 5, y);
-        y += lines.length * 5 + 3;
-      });
-      y += 5;
-
-      // Seção Custos
-      y = checkPageBreak(y);
-      doc.setFontSize(14);
-      doc.setTextColor(42, 109, 176);
-      doc.text("Custos Adicionais e Pagamento", margin, y);
-      y += 7;
-
-      doc.setFontSize(10);
-      doc.setTextColor(51, 51, 51);
-      doc.setFont('helvetica', 'normal');
-
-      const textosCusto = [
-        "Atenção: Pacientes Particulares ou com Convênios sem Cobertura para itens adicionais.",
-        "O pagamento do valor base do exame (Endoscopia: R$ 600,00) é realizado antes do procedimento. Custos adicionais, se necessários, são apurados e pagos após o exame.",
-        "Como o paciente sai do exame sob efeito de sedação, é fundamental que o acompanhante esteja ciente e preparado para realizar o pagamento de eventuais valores extras."
-      ];
-      textosCusto.forEach(txt => {
-        y = checkPageBreak(y);
-        lines = doc.splitTextToSize(txt, maxWidth);
-        doc.text(lines, margin, y);
-        y += lines.length * 4 + 3;
-      });
+      y += 10;
+      
+      addTitle("Custos Adicionais e Pagamento");
+      addText("Atenção: Pacientes Particulares ou com Convênios sem Cobertura para itens adicionais.");
+      addText("O pagamento do valor base do exame (Endoscopia: R$ 600,00) é realizado antes do procedimento. Custos adicionais, se necessários, são apurados e pagos após o exame.");
+      addText("Como o paciente sai do exame sob efeito de sedação, é fundamental que o acompanhante esteja ciente e preparado para realizar o pagamento de eventuais valores extras.");
+      
       y += 2;
-
-      // Tabela de Custos
-      y = checkPageBreak(y);
       doc.autoTable({
         startY: y,
         head: [['Serviço Adicional', 'Valor (R$)', 'Observação']],
@@ -183,29 +294,19 @@
           ['Internação (12h)', '350,00', 'Se for necessário'],
         ],
         theme: 'grid',
-        headStyles: { fillColor: [240, 244, 247] },
-        styles: { fontSize: 9 }
+        headStyles: { fillColor: [240, 244, 247], textColor: 51 },
+        styles: { fontSize: 9, cellPadding: 2 }
       });
       y = doc.lastAutoTable.finalY + 10;
 
-      // Formas de pagamento
-      y = checkPageBreak(y);
-      doc.setFont('helvetica', 'bold');
-      doc.text("Formas de Pagamento:", margin, y);
-      y += 5;
-      doc.setFont('helvetica', 'normal');
-      text = "Dinheiro, PIX, Débito e Crédito. O parcelamento pode ser negociado a depender do valor total.";
-      lines = doc.splitTextToSize(text, maxWidth);
-      doc.text(lines, margin, y);
+      addSubTitle("Formas de Pagamento:");
+      addText("Dinheiro, PIX, Débito e Crédito. O parcelamento pode ser negociado a depender do valor total.");
 
       // Salvar
       doc.save('preparo-endoscopia.pdf');
       btn.disabled = false;
       btn.innerText = '📄 Baixar Preparo em PDF';
     }
-
-    document.addEventListener("DOMContentLoaded", () => { const hoje = new Date(); const dd = String(hoje.getDate()).padStart(2,'0'); const mm = String(hoje.getMonth()+1).padStart(2,'0'); const yyyy = hoje.getFullYear(); document.getElementById("dataEntrevista").value = `${dd}/${mm}/${yyyy}`; });
-    function calcularIMC() { const peso = parseFloat(document.getElementById("peso")?.value); const altura = parseFloat(document.getElementById("altura")?.value); if (peso > 0 && altura > 0) { const imc = (peso / (altura * altura)).toFixed(2); document.getElementById("imc").value = imc; } else { document.getElementById("imc").value = ""; } }
   </script>
 </body>
 </html>
