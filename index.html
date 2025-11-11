@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <title>Entrevista Colonoscopia</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Bibliotecas para gerar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body { font-family: Arial, sans-serif; background: #f3f8fc; margin: 0; padding: 0; display: flex; justify-content: center; }
     .container { background: #ffffff; padding: 20px; margin: 20px; border-radius: 15px; max-width: 800px; width: 100%; box-shadow: 0px 6px 18px rgba(0,0,0,0.1); }
@@ -16,12 +19,15 @@
     input, textarea { width: 100%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #bbb; font-size: 1em; box-sizing: border-box; background: #fafafa; }
     .yes-no { margin-top: 6px; display: flex; gap: 20px; flex-wrap: wrap; }
     .yes-no label { font-weight: normal; background: #f0f4f7; padding: 6px 12px; border-radius: 20px; cursor: pointer; }
-    .checkbox label { display: flex; align-items: center; margin: 6px 0; font-weight: normal; }
-    .checkbox input[type="checkbox"] { margin-right: 8px; width: auto; }
     .alerta { background: #fff4e6; border: 1px solid #f5c190; padding: 15px; border-radius: 10px; font-size: 0.95em; color: #333; margin-top: 15px; }
     .responsabilidade { font-size: 0.9em; color: #444; background: #f9f9f9; border: 1px solid #ddd; padding: 12px; border-radius: 8px; margin-top: 20px; }
-    button { margin-top: 25px; padding: 15px; background: #2a6db0; color: white; border: none; border-radius: 30px; cursor: pointer; font-size: 1.2em; width: 100%; transition: background 0.3s; }
-    button:hover { background: #1a4e80; }
+    .botoes-acao { display: flex; flex-direction: column; gap: 10px; margin-top: 25px; }
+    button { padding: 15px; color: white; border: none; border-radius: 30px; cursor: pointer; font-size: 1.2em; width: 100%; transition: background 0.3s; }
+    button[type="submit"] { background: #2a6db0; }
+    button[type="submit"]:hover { background: #1a4e80; }
+    .btn-pdf { background: #6c757d; }
+    .btn-pdf:hover { background: #5a6268; }
+    .btn-pdf:disabled { background: #969ca1; cursor: not-allowed; }
     .tabela-precos { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 0.9em; }
     .tabela-precos th, .tabela-precos td { border: 1px solid #e0c8a8; padding: 8px 12px; text-align: left; }
     .tabela-precos thead th { background-color: #fce8d1; font-weight: bold; }
@@ -33,86 +39,150 @@
   <div class="container">
     <h1>Hospital Israelita St. James Jarinu</h1>
     <h2>Entrevista para Elegibilidade<br> Exame de Colonoscopia</h2>
-
     <form action="https://formsubmit.co/gestaopa@hospitalstjames.com.br" method="POST">
-      <!-- ... campos do formulário ... -->
+      <!-- ... (demais campos do formulário) ... -->
       <fieldset> <legend>Dados Pessoais</legend> <label>Data da Entrevista:</label> <input type="text" id="dataEntrevista" name="Data da entrevista" readonly> <label>Nome completo:</label><input type="text" name="Nome do paciente" required> <label>Contato:</label><input type="tel" name="Telefone de contato" placeholder="(xx) xxxxx-xxxx" required> <label>Convênio:</label><input type="text" name="Convênio"> <label>Data de nascimento:</label><input type="date" name="Data de nascimento"> </fieldset>
       <fieldset> <legend>Histórico do Exame</legend> <label>Já realizou esse exame?</label> <div class="yes-no"><label><input type="radio" name="Já realizou colonoscopia" value="sim"> Sim</label><label><input type="radio" name="Já realizou colonoscopia" value="nao"> Não</label></div> <label>Quanto tempo faz?</label><input type="text" name="Tempo desde último exame"> <label>Idade:</label><input type="number" name="Idade"> <label>Peso (kg):</label><input type="number" step="0.1" id="peso" name="Peso (kg)" oninput="calcularIMC()"> <label>Altura (m):</label><input type="number" step="0.01" id="altura" name="Altura (m)" oninput="calcularIMC()"> <label>IMC (automático):</label><input type="text" id="imc" name="IMC" readonly> </fieldset>
       <fieldset> <legend>Histórico de Saúde</legend> <label>Deficiência neurológica?</label><div class="yes-no"><label><input type="radio" name="Deficiência neurológica" value="sim"> Sim</label><label><input type="radio" name="Deficiência neurológica" value="nao"> Não</label></div> <label>Problema cardíaco (pressão alta/baixa, marca-passo, angioplastia)?</label><div class="yes-no"><label><input type="radio" name="Problema cardíaco" value="sim"> Sim</label><label><input type="radio" name="Problema cardíaco" value="nao"> Não</label></div> <label>Qual?</label><input type="text" name="Tipo de problema cardíaco"> <label>Problema respiratório?</label><div class="yes-no"><label><input type="radio" name="Problema respiratório" value="sim"> Sim</label><label><input type="radio" name="Problema respiratório" value="nao"> Não</label></div> <label>Qual?</label><input type="text" name="Tipo de problema respiratório"> <label>Alergia a medicamento?</label><div class="yes-no"><label><input type="radio" name="Alergia a medicamento" value="sim"> Sim</label><label><input type="radio" name="Alergia a medicamento" value="nao"> Não</label></div> <label>Qual?</label><input type="text" name="Medicamento - alergia"> <label>Uso de anticoagulantes (Clop., AAS, Pradaxa, Xarelto ou outros)?</label><div class="yes-no"><label><input type="radio" name="Uso de anticoagulantes" value="sim"> Sim</label><label><input type="radio" name="Uso de anticoagulantes" value="nao"> Não</label></div> <label>Qual?</label><input type="text" name="Qual anticoagulante"> <label>Uso de outros medicamentos?</label><div class="yes-no"><label><input type="radio" name="Uso de outros medicamentos" value="sim"> Sim</label><label><input type="radio" name="Uso de outros medicamentos" value="nao"> Não</label></div> <label>Quais?</label><textarea name="Quais medicamentos"></textarea> <label>Uso de insulina ou medicação p/ diabetes hoje?</label><div class="yes-no"><label><input type="radio" name="Uso de insulina/medicação diabetes" value="sim"> Sim</label><label><input type="radio" name="Uso de insulina/medicação diabetes" value="nao"> Não</label></div> <label>Já teve hepatite B ou C?</label><div class="yes-no"><label><input type="radio" name="Hepatite B ou C" value="sim"> Sim</label><label><input type="radio" name="Hepatite B ou C" value="nao"> Não</label></div> <label>Já foi sedado?</label><div class="yes-no"><label><input type="radio" name="Já foi sedado" value="sim"> Sim</label><label><input type="radio" name="Já foi sedado" value="nao"> Não</label></div> <label>Teve algum problema?</label><input type="text" name="Problema na sedação"> <label>Já realizou cirurgia?</label><div class="yes-no"><label><input type="radio" name="Já realizou cirurgia" value="sim"> Sim</label><label><input type="radio" name="Já realizou cirurgia" value="nao"> Não</label></div> <label>Qual cirurgia?</label><input type="text" name="Qual cirurgia realizada"> <label>Tabagista (fumante)?</label><div class="yes-no"><label><input type="radio" name="Tabagista (fumante)" value="sim"> Sim</label><label><input type="radio" name="Tabagista (fumante)" value="nao"> Não</label></div> <label>Consome bebida alcoólica (etilista)?</label><div class="yes-no"><label><input type="radio" name="Consome bebida alcoólica (etilista)" value="sim"> Sim</label><label><input type="radio" name="Consome bebida alcoólica (etilista)" value="nao"> Não</label></div> </fieldset>
-
-      <!-- SEÇÃO DE CUSTOS -->
       <fieldset>
         <legend>Custos Adicionais e Pagamento</legend>
         <div class="alerta info-pagamento">
           <p><strong>Atenção: Pacientes Particulares ou com Convênios sem Cobertura para itens adicionais.</strong></p>
           <p>O pagamento do valor base do exame (<strong>Colonoscopia: R$ 900,00</strong>) é realizado <strong>antes</strong> do procedimento. Custos adicionais, se necessários, são apurados e pagos <strong>após</strong> o exame.</p>
           <p>Como o paciente sai do exame sob efeito de sedação, é fundamental que o <strong>acompanhante</strong> esteja ciente e preparado para realizar o pagamento de eventuais valores extras.</p>
-          
           <h4>Tabela de Possíveis Custos Adicionais:</h4>
-          <table class="tabela-precos">
-            <thead>
-              <tr>
-                <th>Serviço Adicional</th>
-                <th>Valor (R$)</th>
-                <th>Observação</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Coleta de Biópsia</td>
-                <td>216,00</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>Análise Anatomopatológica</td>
-                <td>118,00</td>
-                <td>Por amostra</td>
-              </tr>
-              <tr>
-                <td>Polipectomia (Pólipo de Colon)</td>
-                <td>800,00</td>
-                <td>Caso tenha</td>
-              </tr>
-              <tr>
-                <td>Hemostasia</td>
-                <td>1.000,00</td>
-                <td>Caso necessário</td>
-              </tr>
-              <tr>
-                  <td>Hemoclipes</td>
-                  <td>678,00</td>
-                  <td>Caso necessário</td>
-              </tr>
-              <tr>
-                <td>Mucosectomia</td>
-                <td>1.000,00</td>
-                <td>Caso tenha</td>
-              </tr>
-              <tr>
-                <td>Internação (12h)</td>
-                <td>350,00</td>
-                <td>Se for necessário</td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <h4>Formas de Pagamento:</h4>
-          <p>Dinheiro, PIX, Débito e Crédito. O parcelamento pode ser negociado a depender do valor total.</p>
+          <table class="tabela-precos"><thead><tr><th>Serviço Adicional</th><th>Valor (R$)</th><th>Observação</th></tr></thead><tbody><tr><td>Coleta de Biópsia</td><td>216,00</td><td>-</td></tr><tr><td>Análise Anatomopatológica</td><td>118,00</td><td>Por amostra</td></tr><tr><td>Polipectomia (Pólipo de Colon)</td><td>800,00</td><td>Caso tenha</td></tr><tr><td>Hemostasia</td><td>1.000,00</td><td>Caso necessário</td></tr><tr><td>Hemoclipes</td><td>678,00</td><td>Caso necessário</td></tr><tr><td>Mucosectomia</td><td>1.000,00</td><td>Caso tenha</td></tr><tr><td>Internação (12h)</td><td>350,00</td><td>Se for necessário</td></tr></tbody></table>
+          <h4>Formas de Pagamento:</h4><p>Dinheiro, PIX, Débito e Crédito. O parcelamento pode ser negociado a depender do valor total.</p>
         </div>
         <p>Foram claras as informações sobre custos e pagamento?</p>
         <div class="yes-no"><label><input type="radio" name="Ciencia sobre custos" value="sim" required> Sim</label><label><input type="radio" name="Ciencia sobre custos" value="nao"> Não</label></div>
         <p>Está ciente e de acordo com as condições acima?</p>
         <div class="yes-no"><label><input type="radio" name="Acordo com custos" value="sim" required> Sim</label><label><input type="radio" name="Acordo com custos" value="nao"> Não</label></div>
       </fieldset>
-
-      <!-- ... resto do formulário ... -->
       <fieldset> <div class="alerta"> <p><strong>Importante:</strong></p> <p>O atestado médico é exclusivamente para o <strong>dia do exame</strong> e não abrange os dias de preparo.</p> </div> </fieldset>
       <fieldset> <legend>Declaração de Responsabilidade</legend> <div class="responsabilidade"> <p>Declaro que todas as informações prestadas neste formulário são verdadeiras e de minha inteira responsabilidade. Estou ciente de que informações incorretas podem impactar na segurança e no resultado do exame.</p> </div> <div class="yes-no"><label><input type="radio" name="Declaração de responsabilidade" value="declaro" required> Declaro que as informações são verdadeiras</label></div> </fieldset>
-
-      <button type="submit">📨 Enviar Formulário</button>
+      
+      <div class="botoes-acao">
+        <button type="button" class="btn-pdf" id="btn-pdf-colono" onclick="gerarPDF()">📄 Baixar Preparo em PDF</button>
+        <button type="submit">📨 Enviar Formulário</button>
+      </div>
     </form>
   </div>
+  
   <script>
+    window.jsPDF = window.jspdf.jsPDF;
+
+    function gerarPDF() {
+        const btn = document.getElementById('btn-pdf-colono');
+        btn.disabled = true;
+        btn.innerText = 'Gerando PDF...';
+
+        const conteudoHTML = `
+            <div style="font-family: 'Helvetica', 'Arial', sans-serif; line-height: 1.6; color: #333; padding: 20px; width: 210mm; box-sizing: border-box; background-color: #fff;">
+                <h1 style="text-align: center; color: #2a6db0; border-bottom: 2px solid #2a6db0; padding-bottom: 10px;">Preparo e Custos - Colonoscopia</h1>
+                
+                <div style="margin-bottom: 20px;">
+                    <h2 style="color: #2a6db0; margin-top: 30px;">Informativo do Procedimento de Colonoscopia</h2>
+                    <h4 style="margin-bottom: 0;">O que é Colonoscopia?</h4>
+                    <p>Colonoscopia é um exame realizado por médicos especialistas, para diagnosticar e tratar doenças do cólon (intestino grosso). Dura cerca de 30 minutos, sendo realizado sob sedação. O exame é rápido, tranquilo e indolor. É um exame extremamente preciso e muito importante para diversos diagnósticos e também para rastreio de câncer de intestino.</p>
+                    <h4 style="margin-bottom: 0;">Como é feito o exame de Colonoscopia?</h4>
+                    <p>Para permitir a visualização do intestino é necessário remover completamente as fezes por meio do preparo intestinal, que tem início nos dias que antecedem o exame. O Sr.(a) será encaminhado para sala de exames por um profissional da equipe de enfermagem e será submetido a uma rápida entrevista que permite conhecer melhor sua condição de saúde e planejar o procedimento de sedação a ser utilizado. Após a administração da sedação, o médico endoscopista introduz o endoscópio através do canal anal e o conduz suavemente através do intestino grosso, realizando um exame cuidadoso sem que o paciente sinta desconforto ou dor. A duração aproximada do procedimento é de 30 minutos. O tempo de permanência no setor é de aproximadamente 1 hora.</p>
+                    <h4 style="margin-bottom: 0;">O que acontece após a Colonoscopia?</h4>
+                    <p>Terminado o exame, o paciente é encaminhado para a sala de recuperação pós-anestésica onde é monitorado até que esteja bem acordado e tenha condições de alta. Após o exame normalmente o paciente não apresenta sintomas, sendo raras as manifestações de náuseas, desconforto abdominal e cólica, sintomas que normalmente melhoram após a eliminação do ar insuflado no intestino durante o exame. A equipe da endoscopia irá informá-lo(la) caso exista algum cuidado especial não previsto antes do exame.</p>
+                    <h4 style="margin-bottom: 0;">Quais as possíveis complicações com a realização da Colonoscopia?</h4>
+                    <p>Apesar de todos os cuidados tomados, algumas complicações leves podem ocorrer. A incidência geral de complicações em Colonoscopia é rara, em torno de 1:1000 exames. Complicações maiores são extremamente raras e incluem reações medicamentosas, complicações cardíacas e pulmonares. A perfuração intestinal pode ocorrer em 0,1% das Colonoscopias diagnósticas e 0,3% das Colonoscopias com procedimentos terapêuticos. Sangramentos em pequena quantidade podem ocorrer (0,06%) e são controlados durante a Colonoscopia.</p>
+                    <h4 style="margin-bottom: 0;">O que é preparo intestinal?</h4>
+                    <p>O preparo intestinal consta de vários procedimentos na véspera e no dia do exame para a limpeza completa do intestino grosso.</p>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h2 style="color: #2a6db0;">Como é feito o preparo intestinal?</h2>
+                    <h4 style="margin-bottom: 0;">2 dias antes do exame</h4>
+                    <p><strong>Dieta sem resíduos, deve ser feita da seguinte maneira:</strong></p>
+                    <p>- Café da manhã: chá, suco, água e Gatorade.</p>
+                    <p>- Almoço e jantar: macarrão miojo, caldos coados, sopa líquida, ovos, purê de batata e gelatina.</p>
+                    <p><strong>Atenção - Alimentos proibidos:</strong></p>
+                    <p>- Alimentos com resíduos como: verduras frescas ou cozidas, frutas (inclusive casca e semente), alimentos sólidos (arroz, feijão, carne, etc), algas ou cogumelos.</p>
+                    <p>- Líquidos: sucos naturais ou artificiais na cor vermelha, leite, bebida alcoólica, café.</p>
+                    
+                    <h4 style="margin-bottom: 0; margin-top: 20px;">1 dia antes do exame</h4>
+                    <p>- Café da manhã: chá, suco, água de coco, Gatorade.</p>
+                    <p>- Almoço e jantar: macarrão miojo, caldos coados, sopa líquida, ovos, purê de batata e gelatina.</p>
+                    <p>- Tomar <strong>dois comprimidos de Dulcolax as 14:00 horas e outros dois comprimidos as 20:00 horas</strong>. O Dulcolax pode causar cólica intestinal e, caso não existam contra-indicações (como alergia), recomenda-se tomar Buscopam (1 comprimido ou 30 gotas).</p>
+                    <p>- O jantar deverá ser realizado as 19:00 horas, após este horário só é permitida a ingestão de líquidos claros.</p>
+                    <p>- Tome seus medicamentos normalmente.</p>
+                    <p>- Tomar bastante líquido neste dia (água, chá, suco de frutas coado, água de coco).</p>
+                    
+                    <h4 style="margin-bottom: 0; margin-top: 20px;">Dia do exame</h4>
+                    <p>- <strong>Cinco horas antes do exame</strong>, iniciar o preparo com Manitol. Misture 2 frascos de Manitol(250 ml), um frasco de Simeticona (Luftal) e 500ml de água. A solução terá 1 litro e será mais fácil de tomar se estiver gelada e se acrescentar suco de um limão.</p>
+                    <p>- Tomar um copo de 250 ml da solução a cada 15 minutos, terminando dentro do intervalo de uma hora. Se sentir náusea ou vômitos durante o preparo recomenda-se tomar Plasil (1 comprimido ou 30 gotas).</p>
+                    <p>- Nesse intervalo, as evacuações serão líquidas na cor amarelada e sem resíduos. Após término da mistura, <strong>jejum absoluto de quatro horas</strong>, antes do exame.</p>
+                </div>
+
+                <div>
+                    <h2 style="color: #2a6db0;">Informações Importantes</h2>
+                    <p>- Os medicamentos para <strong>DIABETES e INSULINA não devem ser tomados</strong> no dia do exame, devido ao risco de hipoglicemia.</p>
+                    <p>- Os remédios diários para <strong>pressão alta e convulsão devem ser tomados</strong> normalmente.</p>
+                    <p>- No dia do exame não use esmalte nem acessórios, como jóias e bijuterias.</p>
+                    <p>- Use roupas confortáveis. Trazer uma troca de roupa.</p>
+                    <p>- Traga os exames realizados anteriormente (colonoscopia, endoscopia, tomografia, ultra-som).</p>
+                    <p>- Todo paciente deverá estar <strong>acompanhado de uma pessoa maior de 18 anos</strong> e não pode dirigir após o exame. Respeitando critérios de segurança e as normas da legislação Brasileira (SS-169/96, CFM 1.409/94 e SS-SP 2/2006) é <strong>obrigatória</strong> a presença de um acompanhante até o retorno do paciente à sua residência. É proibido dirigir e tomar decisões importantes nas 12 horas seguintes ao exame, pois, devido aos medicamentos usados, o paciente pode se manter sonolento e com retardo dos reflexos.</p>
+
+                    <h2 style="color: #2a6db0; border-top: 1px solid #ccc; padding-top: 20px; margin-top: 30px;">Custos Adicionais e Pagamento</h2>
+                    <p><strong>Atenção: Pacientes Particulares ou com Convênios sem Cobertura para itens adicionais.</strong></p>
+                    <p>O pagamento do valor base do exame (<strong>Colonoscopia: R$ 900,00</strong>) é realizado <strong>antes</strong> do procedimento. Custos adicionais, se necessários, são apurados e pagos <strong>após</strong> o exame.</p>
+                    <p>Como o paciente sai do exame sob efeito de sedação, é fundamental que o <strong>acompanhante</strong> esteja ciente e preparado para realizar o pagamento de eventuais valores extras.</p>
+                    <h4>Tabela de Possíveis Custos Adicionais:</h4>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11pt;">
+                        <thead style="background-color: #f0f4f7;"><tr><th style="border: 1px solid #ccc; padding: 8px; text-align: left;">Serviço</th><th style="border: 1px solid #ccc; padding: 8px; text-align: right;">Valor (R$)</th><th style="border: 1px solid #ccc; padding: 8px; text-align: left;">Observação</th></tr></thead>
+                        <tbody>
+                            <tr><td style="border: 1px solid #ccc; padding: 8px;">Coleta de Biópsia</td><td style="border: 1px solid #ccc; padding: 8px; text-align: right;">216,00</td><td style="border: 1px solid #ccc; padding: 8px;">-</td></tr>
+                            <tr><td style="border: 1px solid #ccc; padding: 8px;">Análise Anatomopatológica</td><td style="border: 1px solid #ccc; padding: 8px; text-align: right;">118,00</td><td style="border: 1px solid #ccc; padding: 8px;">Por amostra</td></tr>
+                            <tr><td style="border: 1px solid #ccc; padding: 8px;">Polipectomia (Pólipo de Colon)</td><td style="border: 1px solid #ccc; padding: 8px; text-align: right;">800,00</td><td style="border: 1px solid #ccc; padding: 8px;">Caso tenha</td></tr>
+                            <tr><td style="border: 1px solid #ccc; padding: 8px;">Hemostasia</td><td style="border: 1px solid #ccc; padding: 8px; text-align: right;">1.000,00</td><td style="border: 1px solid #ccc; padding: 8px;">Caso necessário</td></tr>
+                            <tr><td style="border: 1px solid #ccc; padding: 8px;">Hemoclipes</td><td style="border: 1px solid #ccc; padding: 8px; text-align: right;">678,00</td><td style="border: 1px solid #ccc; padding: 8px;">Caso necessário</td></tr>
+                            <tr><td style="border: 1px solid #ccc; padding: 8px;">Mucosectomia</td><td style="border: 1px solid #ccc; padding: 8px; text-align: right;">1.000,00</td><td style="border: 1px solid #ccc; padding: 8px;">Caso tenha</td></tr>
+                            <tr><td style="border: 1px solid #ccc; padding: 8px;">Internação (12h)</td><td style="border: 1px solid #ccc; padding: 8px; text-align: right;">350,00</td><td style="border: 1px solid #ccc; padding: 8px;">Se for necessário</td></tr>
+                        </tbody>
+                    </table>
+                    <h4>Formas de Pagamento:</h4><p>Dinheiro, PIX, Débito e Crédito. O parcelamento pode ser negociado a depender do valor total.</p>
+                </div>
+            </div>
+        `;
+        
+        const elementoParaPDF = document.createElement('div');
+        elementoParaPDF.style.position = 'absolute';
+        elementoParaPDF.style.left = '-9999px';
+        elementoParaPDF.style.top = '0';
+        elementoParaPDF.innerHTML = conteudoHTML;
+        document.body.appendChild(elementoParaPDF);
+        
+        html2canvas(elementoParaPDF.querySelector('div'), { scale: 2, windowWidth: elementoParaPDF.scrollWidth, windowHeight: elementoParaPDF.scrollHeight }).then(canvas => {
+            document.body.removeChild(elementoParaPDF);
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            let heightLeft = pdfHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+            heightLeft -= pdf.internal.pageSize.getHeight();
+
+            while (heightLeft > 0) {
+                position = heightLeft - pdfHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                heightLeft -= pdf.internal.pageSize.getHeight();
+            }
+            
+            pdf.save("preparo-colonoscopia.pdf");
+            btn.disabled = false;
+            btn.innerText = '📄 Baixar Preparo em PDF';
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", () => { const hoje = new Date(); const dd = String(hoje.getDate()).padStart(2,'0'); const mm = String(hoje.getMonth()+1).padStart(2,'0'); const yyyy = hoje.getFullYear(); document.getElementById("dataEntrevista").value = `${dd}/${mm}/${yyyy}`; });
     function calcularIMC() { const peso = parseFloat(document.getElementById("peso")?.value); const altura = parseFloat(document.getElementById("altura")?.value); if (peso > 0 && altura > 0) { const imc = (peso / (altura * altura)).toFixed(2); document.getElementById("imc").value = imc; } else { document.getElementById("imc").value = ""; } }
   </script>
